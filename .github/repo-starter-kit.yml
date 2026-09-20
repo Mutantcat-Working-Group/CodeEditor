@@ -1,5 +1,5 @@
 package: "@daiyam/default"
-repository: https://github.com/VSCodium/vscodium
+repository: https://github.com/Mutantcat-Working-Group/CodeEditor
 resources:
   - label
 keep: true

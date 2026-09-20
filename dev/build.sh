@@ -5,12 +5,12 @@
 # to run with Bash: "C:\Program Files\Git\bin\bash.exe" ./dev/build.sh
 ###
 
-export APP_NAME="VSCodium"
-export ASSETS_REPOSITORY="VSCodium/vscodium"
-export BINARY_NAME="codium"
+export APP_NAME="CodeEditor"
+export ASSETS_REPOSITORY="Mutantcat-Working-Group/CodeEditor"
+export BINARY_NAME="codeeditor"
 export CI_BUILD="no"
-export GH_REPO_PATH="VSCodium/vscodium"
-export ORG_NAME="VSCodium"
+export GH_REPO_PATH="Mutantcat-Working-Group/CodeEditor"
+export ORG_NAME="Mutantcat-Working-Group"
 export SHOULD_BUILD="yes"
 export SKIP_ASSETS="yes"
 export SKIP_BUILD="no"
@@ -22,8 +22,8 @@ export VSCODE_SKIP_NODE_VERSION_CHECK="yes"
 while getopts ":ilops" opt; do
   case "$opt" in
     i)
-      export ASSETS_REPOSITORY="VSCodium/vscodium-insiders"
-      export BINARY_NAME="codium-insiders"
+      export ASSETS_REPOSITORY="Mutantcat-Working-Group/CodeEditor-insiders"
+      export BINARY_NAME="codeeditor-insiders"
       export VSCODE_QUALITY="insider"
       ;;
     l)
@@ -112,7 +112,7 @@ if [[ "${SKIP_BUILD}" == "no" ]]; then
     git add .
     git reset -q --hard HEAD
 
-    while [[ -n "$( git log -1 | grep "VSCODIUM HELPER" )" ]]; do
+    while [[ -n "$( git log -1 | grep "CODEEDITOR HELPER" )" ]]; do
       git reset -q --hard HEAD~
     done
 
@@ -127,9 +127,9 @@ if [[ "${SKIP_BUILD}" == "no" ]]; then
     mkdir -p ~/.gyp
 
     if [[ -f "${HOME}/.gyp/include.gypi" ]]; then
-      mv ~/.gyp/include.gypi ~/.gyp/include.gypi.pre-vscodium
+      mv ~/.gyp/include.gypi ~/.gyp/include.gypi.pre-codeeditor
     else
-      echo "{}" > ~/.gyp/include.gypi.pre-vscodium
+      echo "{}" > ~/.gyp/include.gypi.pre-codeeditor
     fi
 
     cp ./build/osx/include.gypi ~/.gyp/include.gypi
@@ -138,7 +138,7 @@ if [[ "${SKIP_BUILD}" == "no" ]]; then
   . build.sh
 
   if [[ -f "./include_${OS_NAME}.gypi" ]]; then
-    mv ~/.gyp/include.gypi.pre-vscodium ~/.gyp/include.gypi
+    mv ~/.gyp/include.gypi.pre-codeeditor ~/.gyp/include.gypi
   fi
 
   if [[ "${VSCODE_LATEST}" == "yes" ]]; then

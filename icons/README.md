@@ -1,9 +1,5 @@
-## Files
+## Source
 
-| filename                  | color  | width | border |
-| ------------------------- | ------ | ----- | ------ |
-| `codium_clt.svg`          | light  |       |        |
-| `codium_cnl.svg`          | normal |       |        |
-| `codium_cnl_w80_b8.svg`   | normal | 80%   | 8pt    |
-| `codium_cnl_w100_b05.svg` | normal | 100%  | 0.5pt  |
-
+`codeeditor-icon.png` is the single source image for CodeEditor branding.
+`build_icons.sh` generates the platform icons (`.icns`, `.ico`, `.png`, `.xpm`,
+SVG media) from it.
