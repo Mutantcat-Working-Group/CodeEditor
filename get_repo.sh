@@ -8,6 +8,13 @@ if [[ "${CI_BUILD}" != "no" ]]; then
   git config --global --add safe.directory "/__w/$( echo "${GITHUB_REPOSITORY}" | awk '{print tolower($0)}' )"
 fi
 
+if [[ -z "${RELEASE_VERSION}" ]] && [[ -f "./version.json" ]]; then
+  RELEASE_VERSION=$( jq -r '.version // empty' version.json )
+  # versions from version.json use our own scheme and are not derived from
+  # the upstream VS Code tag
+  CUSTOM_RELEASE_VERSION="yes"
+fi
+
 if [[ -z "${RELEASE_VERSION}" ]]; then
   if [[ "${VSCODE_LATEST}" == "yes" ]] || [[ ! -f "./upstream/${VSCODE_QUALITY}.json" ]]; then
     echo "Retrieve lastest version"
@@ -35,29 +42,40 @@ if [[ -z "${RELEASE_VERSION}" ]]; then
     RELEASE_VERSION="${MS_TAG}${TIME_PATCH}"
   fi
 else
-  if [[ "${VSCODE_QUALITY}" == "insider" ]]; then
-    if [[ "${RELEASE_VERSION}" =~ ^([0-9]+\.[0-9]+\.[0-5])[0-9]+-insider$ ]];
-    then
-      MS_TAG="${BASH_REMATCH[1]}"
-    else
-      echo "Error: Bad RELEASE_VERSION: ${RELEASE_VERSION}"
-      exit 1
-    fi
-  else
-    if [[ "${RELEASE_VERSION}" =~ ^([0-9]+\.[0-9]+\.[0-5])[0-9]+$ ]];
-    then
-      MS_TAG="${BASH_REMATCH[1]}"
-    else
-      echo "Error: Bad RELEASE_VERSION: ${RELEASE_VERSION}"
-      exit 1
-    fi
-  fi
+  if [[ -z "${MS_TAG}" || -z "${MS_COMMIT}" ]]; then
+    UPSTREAM_TAG=$( jq -r '.tag' "./upstream/${VSCODE_QUALITY}.json" )
+    UPSTREAM_COMMIT=$( jq -r '.commit' "./upstream/${VSCODE_QUALITY}.json" )
 
-  if [[ "${MS_TAG}" == "$( jq -r '.tag' "./upstream/${VSCODE_QUALITY}.json" )" ]]; then
-    MS_COMMIT=$( jq -r '.commit' "./upstream/${VSCODE_QUALITY}.json" )
-  else
-    echo "Error: No MS_COMMIT for ${RELEASE_VERSION}"
-    exit 1
+    if [[ "${CUSTOM_RELEASE_VERSION}" == "yes" ]]; then
+      echo "Custom RELEASE_VERSION: ${RELEASE_VERSION}, building against ${UPSTREAM_TAG}"
+      MS_TAG="${UPSTREAM_TAG}"
+      MS_COMMIT="${UPSTREAM_COMMIT}"
+    else
+      if [[ "${VSCODE_QUALITY}" == "insider" ]]; then
+        if [[ "${RELEASE_VERSION}" =~ ^([0-9]+\.[0-9]+\.[0-5])[0-9]+-insider$ ]];
+        then
+          MS_TAG="${BASH_REMATCH[1]}"
+        else
+          echo "Error: Bad RELEASE_VERSION: ${RELEASE_VERSION}"
+          exit 1
+        fi
+      else
+        if [[ "${RELEASE_VERSION}" =~ ^([0-9]+\.[0-9]+\.[0-5])[0-9]+$ ]];
+        then
+          MS_TAG="${BASH_REMATCH[1]}"
+        else
+          echo "Error: Bad RELEASE_VERSION: ${RELEASE_VERSION}"
+          exit 1
+        fi
+      fi
+
+      if [[ "${MS_TAG}" != "${UPSTREAM_TAG}" ]]; then
+        echo "Error: No MS_COMMIT for ${RELEASE_VERSION}"
+        exit 1
+      fi
+
+      MS_COMMIT="${UPSTREAM_COMMIT}"
+    fi
   fi
 fi
 

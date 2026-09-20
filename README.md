@@ -1,218 +1,180 @@
-<div id="vscodium-logo" align="center">
+<div align="center">
    <br />
-   <img src="./icons/stable/codium_cnl.svg" alt="VSCodium Logo" width="200"/>
-   <h1>VSCodium</h1>
-   <h3>Free/Libre Open Source Software Binaries of Visual Studio Code</h3>
+   <img src="./icon.png" alt="CodeEditor" width="120"/>
+   <h1>CodeEditor</h1>
+   <h3>Free and open source binaries of Visual Studio Code, rebranded for the Mutantcat Working Group</h3>
 </div>
 
-<div id="badges" align="center">
+<p align="center">
+   <a href="https://github.com/Mutantcat-Working-Group/CodeEditor/releases/latest"><img src="https://img.shields.io/github/v/release/Mutantcat-Working-Group/CodeEditor?label=release" alt="current release"/></a>
+   <a href="https://github.com/Mutantcat-Working-Group/CodeEditor/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Mutantcat-Working-Group/CodeEditor" alt="license"/></a>
+   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue" alt="platforms"/>
+</p>
 
-[![current release](https://img.shields.io/github/release/vscodium/vscodium.svg)](https://github.com/vscodium/vscodium/releases)
-[![license](https://img.shields.io/github/license/VSCodium/vscodium.svg)](https://github.com/VSCodium/vscodium/blob/master/LICENSE)
-[![Gitter](https://img.shields.io/gitter/room/vscodium/vscodium.svg)](https://gitter.im/VSCodium/Lobby)
-[![codium](https://snapcraft.io//codium/badge.svg)](https://snapcraft.io/codium)
-[![codium](https://snapcraft.io//codium/trending.svg?name=0)](https://snapcraft.io/codium)
+Language: <a href="#zh-cn">Chinese</a> | <a href="#english">English</a>
 
-</div>
+## <a id="zh-cn"></a>中文
 
-**This is not a fork. This is a repository of scripts to automatically build [Microsoft's `vscode` repository](https://github.com/microsoft/vscode) into freely-licensed binaries with a community-driven default configuration.**
+### 简介
 
-## Table of Contents
+CodeEditor 是一套构建脚本，它把 [Microsoft 的 `vscode` 仓库](https://github.com/microsoft/vscode) 打包成自由许可的二进制文件，并使用社区驱动的默认配置。本项目由 Mutantcat Working Group 维护，包名统一为 `org.mutantcat.*`，图标为 [`icon.png`](./icon.png)。
 
-- [Download/Install](#download-install)
-   - [Install with Brew](#install-with-brew)
-   - [Install with Windows Package Manager (WinGet)](#install-with-winget)
-   - [Install with Chocolatey](#install-with-choco)
-   - [Install with Scoop](#install-with-scoop)
-   - [Install with snap](#install-with-snap)
-   - [Install with Package Manager](#install-with-package-manager)
-   - [Install on Arch Linux](#install-on-arch-linux)
-   - [Flatpak Option](#flatpak)
-- [Build](#build)
-- [Why Does This Exist](#why)
-- [More Info](#more-info)
-- [Supported Platforms](#supported-platforms)
-- [Previously Supported Platforms](#previously-supported-platforms)
+### 特性
 
-## <a id="download-install"></a>Download/Install
+- 默认关闭遥测与追踪，扩展市场指向 [open-vsx.org](https://open-vsx.org)
+- 三大平台、全部主流架构的安装包，下载后双击即可使用
+- Windows 提供 NSIS 安装包，支持每用户安装，无需管理员权限
+- macOS 提供 ad-hoc 签名的 DMG，同时覆盖 Intel 与 Apple Silicon
+- Linux 提供 AppImage，无需安装即可运行
+- 发布 Release 或推送版本 tag 时，由 GitHub Actions 自动构建并上传安装包
 
-:tada: :tada:
-Download latest release here:
-[stable](https://github.com/VSCodium/vscodium/releases) or
-[insiders](https://github.com/VSCodium/vscodium-insiders/releases)
-:tada: :tada:
+### 下载与安装
 
-[More info / helpful tips are here.](https://github.com/VSCodium/vscodium/blob/master/docs/index.md)
+最新版本请前往 [Releases](https://github.com/Mutantcat-Working-Group/CodeEditor/releases/latest) 页面下载。
 
+#### Windows
 
-#### <a id="install-with-brew"></a>Install with Brew (Mac)
+下载 `CodeEditorSetup-x64-1.0.20260921.exe` 或 `CodeEditorSetup-arm64-1.0.20260921.exe`，双击运行。安装程序为 NSIS 安装包，默认安装到 `%LOCALAPPDATA%\Programs\CodeEditor`，不需要管理员权限，可在系统设置中正常卸载。
 
-If you are on a Mac and have [Homebrew](https://brew.sh/) installed:
-```bash
-# stable
-brew install --cask vscodium
+#### macOS
 
-# insiders
-brew install --cask vscodium@insiders
-```
+下载 `CodeEditor.x64.1.0.20260921.dmg`（Intel）或 `CodeEditor.arm64.1.0.20260921.dmg`（Apple Silicon），打开后把 CodeEditor 拖到 Applications。两个 DMG 都带有 ad-hoc 签名。
 
-#### <a id="install-with-winget"></a>Install with Windows Package Manager (WinGet)
+#### Linux
 
-If you use Windows and have [Windows Package Manager](https://github.com/microsoft/winget-cli) installed:
-```cmd
-:: stable
-winget install -e --id VSCodium.VSCodium
-
-:: insider
-winget install -e --id VSCodium.VSCodium.Insiders
-```
-
-#### <a id="install-with-choco"></a>Install with Chocolatey (Windows)
-
-If you use Windows and have [Chocolatey](https://chocolatey.org) installed (thanks to [@Thilas](https://github.com/Thilas)):
-```cmd
-:: stable
-choco install vscodium
-
-:: insider
-choco install vscodium-insiders
-```
-
-#### <a id="install-with-scoop"></a>Install with Scoop (Windows)
-
-If you use Windows and have [Scoop](https://scoop.sh) installed:
-```bash
-scoop bucket add extras
-scoop install vscodium
-```
-
-#### <a id="install-with-snap"></a>Install with snap (GNU/Linux)
-
-VSCodium is available in the [Snap Store](https://snapcraft.io/) as [Codium](https://snapcraft.io/codium), thanks to the help of the [Snapcrafters](https://github.com/snapcrafters/codium) community.
-If your GNU/Linux distribution has support for [snaps](https://snapcraft.io/docs/installing-snapd):
+下载 `CodeEditor-1.0.20260921-anylinux-x86_64.AppImage` 或 `CodeEditor-1.0.20260921-anylinux-aarch64.AppImage`，然后：
 
 ```bash
-snap install codium --classic
+chmod +x CodeEditor-1.0.20260921-anylinux-x86_64.AppImage
+./CodeEditor-1.0.20260921-anylinux-x86_64.AppImage
 ```
 
-#### <a id="install-with-package-manager"></a>Install with Package Manager (GNU/Linux)
+### 安装包一览
 
-You can always install using the downloads (deb, rpm, tar) on the releases page for [stable](https://github.com/VSCodium/vscodium/releases) or [insiders](https://github.com/VSCodium/vscodium-insiders/releases), but you can also install using your favorite package manager and get automatic updates.
+| 平台 | 架构 | 文件 | 格式 |
+| --- | --- | --- | --- |
+| Windows | x64 / arm64 | `CodeEditorSetup-<arch>-<version>.exe` | NSIS 安装包 |
+| macOS | x64 (Intel) | `CodeEditor.x64.<version>.dmg` | ad-hoc 签名 DMG |
+| macOS | arm64 (Apple Silicon) | `CodeEditor.arm64.<version>.dmg` | ad-hoc 签名 DMG |
+| Linux | x86_64 | `CodeEditor-<version>-anylinux-x86_64.AppImage` | AppImage |
+| Linux | aarch64 | `CodeEditor-<version>-anylinux-aarch64.AppImage` | AppImage |
 
-[@paulcarroty](https://github.com/paulcarroty) has set up a repository with instructions for `apt`, `dnf` and `zypper` [here](https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo).
+每个文件都会同时上传 `.sha1` 与 `.sha256` 校验和，可用于核对下载内容。
 
-Any issues installing VSCodium using your package manager should be directed to that repository's issue tracker.
+### 从源码构建
 
-#### <a id="install-on-arch-linux"></a>Install on Arch Linux
-
-VSCodium is available in [AUR](https://wiki.archlinux.org/index.php/Arch_User_Repository), maintained by [@binex-dsk](https://github.com/binex-dsk) as package [vscodium-bin](https://aur.archlinux.org/packages/vscodium-bin/) (stable) and as [vscodium-insiders-bin](https://aur.archlinux.org/packages/vscodium-insiders-bin).
-
-If you want to save disk space by having VSCodium use the Electron system-wide, you also have [vscodium-electron](https://aur.archlinux.org/packages/vscodium-electron),
-maintained by [@m00nw4tch3r](https://aur.archlinux.org/account/m00nw4tch3r).
-
-An alternative package [vscodium-git](https://aur.archlinux.org/packages/vscodium-git/), maintained by [@cedricroijakkers](https://github.com/cedricroijakkers), is also available should you wish to compile from source yourself.
-
-#### <a id="flatpak"></a>Flatpak Option (GNU/Linux)
-
-VSCodium is available as a Flatpak app [here](https://flathub.org/apps/details/com.vscodium.codium) and the build repo is [here](https://github.com/flathub/com.vscodium.codium).
-If your distribution has support for [flatpak](https://flathub.org), and you have enabled the [flathub repo](https://flatpak.org/setup/):
+构建脚本会克隆 Microsoft 的 `vscode` 仓库并执行官方构建流程，因此需要 Node.js、Python 与 Git：
 
 ```bash
-flatpak install flathub com.vscodium.codium
-flatpak run com.vscodium.codium
+git clone https://github.com/Mutantcat-Working-Group/CodeEditor.git
+cd CodeEditor
+
+./get_repo.sh       # 克隆对应版本的 vscode
+./build.sh          # 构建编辑器
+./prepare_assets.sh # 打包当前平台的产物
 ```
 
-## <a id="build"></a>Build
+更详细的说明见 [docs/howto-build.md](docs/howto-build.md)。
 
-Build instructions can be found [here](https://github.com/VSCodium/vscodium/blob/master/docs/howto-build.md)
+### 版本号
 
-## <a id="why"></a>Why Does This Exist
+当前版本为 `1.0.20260921`，记录在 [`version.json`](version.json) 中。升级版本时只需修改该文件，CI 会读取它作为发布版本号。
 
-This repository contains build files to generate free release binaries of Microsoft's Visual Studio Code. When we speak of "free software", we're talking about freedom, not price.
+### 自动发布
 
-Microsoft's releases of Visual Studio Code are licensed under [this not-FLOSS license](https://code.visualstudio.com/license) and contain telemetry/tracking. According to [this comment](https://github.com/Microsoft/vscode/issues/60#issuecomment-161792005) from a Visual Studio Code maintainer:
+工作流定义见 [`.github/workflows/release-packages.yml`](.github/workflows/release-packages.yml)。当发布 Release、推送 `v*` 或 `[0-9]*` 开头的 tag，或手动触发时，它会并行构建 Linux、Windows 与 macOS 三个平台的安装包，并上传到对应的 Release 中。
 
-> When we [Microsoft] build Visual Studio Code, we do exactly this. We clone the vscode repository, we lay down a customized product.json that has Microsoft specific functionality (telemetry, gallery, logo, etc.), and then produce a build that we release under our license.
->
-> When you clone and build from the vscode repo, none of these endpoints are configured in the default product.json. Therefore, you generate a "clean" build, without the Microsoft customizations, which is by default licensed under the MIT license
+### macOS 首次启动
 
-This repo exists so that you don't have to download+build from source. The build scripts in this repo clone Microsoft's vscode repo, run the build commands, and upload the resulting binaries to [GitHub releases](https://github.com/VSCodium/vscodium/releases). __These binaries are licensed under the MIT license. Telemetry is disabled.__
+由于 DMG 使用 ad-hoc 签名而非 Apple 开发者证书，首次打开时 Gatekeeper 可能提示无法验证开发者。右键点击 CodeEditor 选择“打开”，或在终端执行：
 
-If you want to build from source yourself, head over to [Microsoft's vscode repo](https://github.com/Microsoft/vscode) and follow their [instructions](https://github.com/Microsoft/vscode/wiki/How-to-Contribute#build-and-run). This repo exists to make it easier to get the latest version of MIT-licensed Visual Studio Code.
+```bash
+xattr -dr com.apple.quarantine /Applications/CodeEditor.app
+```
 
-Microsoft's build process (which we are running to build the binaries) does download additional files. Those packages downloaded during build are:
+### 许可证
 
-- Pre-built extensions from the GitHub:
-   - [ms-vscode.js-debug-companion](https://github.com/microsoft/vscode-js-debug-companion)
-   - [ms-vscode.js-debug](https://github.com/microsoft/vscode-js-debug)
-   - [ms-vscode.vscode-js-profile-table](https://github.com/microsoft/vscode-js-profile-visualizer)
-- From [Electron releases](https://github.com/electron/electron/releases) (using [gulp-atom-electron](https://github.com/joaomoreno/gulp-atom-electron))
-   - electron
-   - ffmpeg
+本项目构建脚本基于 [MIT](LICENSE) 许可发布，构建产物同样以 MIT 许可分发。
 
-## <a id="more-info"></a>More Info
+## <a id="english"></a>English
 
-### Documentation
+### About
 
-For more information on getting all the telemetry disabled, tips for migrating from Visual Studio Code to VSCodium and more, have a look at [the Docs page](https://github.com/VSCodium/vscodium/blob/master/docs/index.md) page.
+CodeEditor is a repository of build scripts that turns [Microsoft's `vscode` repository](https://github.com/microsoft/vscode) into freely licensed binaries with a community-driven default configuration. It is maintained by the Mutantcat Working Group, uses `org.mutantcat.*` package identifiers, and ships with [`icon.png`](./icon.png).
 
-### Troubleshooting
+### Features
 
-If you have any issue, please check [the Troubleshooting page](https://github.com/VSCodium/vscodium/blob/master/docs/troubleshooting.md) or the existing issues.
+- Telemetry and tracking disabled by default, extensions served from [open-vsx.org](https://open-vsx.org)
+- Installers for three platforms and every mainstream architecture, ready to run after download
+- Windows installers built with NSIS, per-user install, no administrator rights required
+- macOS DMGs with an ad-hoc code signature for both Intel and Apple Silicon
+- Linux AppImages that run without installation
+- GitHub Actions builds and uploads every package when a release is published or a version tag is pushed
 
-### Extensions and the Marketplace
+### Download and install
 
-According to the Visual Studio Marketplace [Terms of Use](https://aka.ms/vsmarketplace-ToU), _you may only install and use Marketplace Offerings with Visual Studio Products and Services._ For this reason, VSCodium uses [open-vsx.org](https://open-vsx.org/), an open source registry for Visual Studio Code extensions. See the [Extensions + Marketplace](https://github.com/VSCodium/vscodium/blob/master/docs/index.md#extensions-marketplace) section on the Docs page for more details.
+Grab the latest files from the [Releases](https://github.com/Mutantcat-Working-Group/CodeEditor/releases/latest) page.
 
-Please note that some Visual Studio Code extensions have licenses that restrict their use to the official Visual Studio Code builds and therefore do not work with VSCodium. See [this note](https://github.com/VSCodium/vscodium/blob/master/docs/extensions.md#proprietary-debugging-tools) on the Docs page for what's been found so far and possible workarounds.
+#### Windows
 
-### How are the VSCodium binaries built?
+Download `CodeEditorSetup-x64-1.0.20260921.exe` or `CodeEditorSetup-arm64-1.0.20260921.exe` and run it. The NSIS installer puts CodeEditor into `%LOCALAPPDATA%\Programs\CodeEditor` without asking for administrator rights, and it can be removed from Windows Settings.
 
-If you would like to see the commands we run to build `vscode` into VSCodium binaries, have a look at the workflow files in `.github/workflows` for Windows, GNU/Linux and macOS. These build files call all the other scripts in the repo. If you find something that doesn't make sense, feel free to ask about it [on Gitter](https://gitter.im/VSCodium/Lobby).
+#### macOS
 
-The builds are run every day, but exit early if there isn't a new release from Microsoft.
+Download `CodeEditor.x64.1.0.20260921.dmg` (Intel) or `CodeEditor.arm64.1.0.20260921.dmg` (Apple Silicon), then drag CodeEditor into Applications. Both DMGs carry an ad-hoc signature.
 
-## <a id="supported-platforms"></a>Supported Platforms
+#### Linux
 
-The minimal version is limited by the core component Electron, you may want to check its [platform prerequisites](https://www.electronjs.org/docs/latest/development/build-instructions-gn#platform-prerequisites).
+Download `CodeEditor-1.0.20260921-anylinux-x86_64.AppImage` or `CodeEditor-1.0.20260921-anylinux-aarch64.AppImage`, then:
 
-- [x] macOS (`zip`, `dmg`) macOS 12 or newer x64
-- [x] macOS (`zip`, `dmg`) macOS 12 or newer arm64
-- [x] GNU/Linux x64 (`deb`, `rpm`, `AppImage`, `snap`, `tar.gz`)
-- [x] GNU/Linux arm64 (`deb`, `rpm`, `snap`, `tar.gz`)
-- [x] GNU/Linux riscv64 (`tar.gz`)
-- [x] GNU/Linux loong64 (`tar.gz`)
-- [x] GNU/Linux ppc64le (`tar.gz`)
-- [x] Windows 10 / Server 2012 R2 or newer x64
-- [x] Windows 10 / Server 2012 R2 or newer arm64
+```bash
+chmod +x CodeEditor-1.0.20260921-anylinux-x86_64.AppImage
+./CodeEditor-1.0.20260921-anylinux-x86_64.AppImage
+```
 
-## <a id="previously-supported-platforms"></a>Previously Supported Platforms
+### Packages
 
-## <a id="thanks"></a>Special thanks
+| Platform | Architecture | File | Format |
+| --- | --- | --- | --- |
+| Windows | x64 / arm64 | `CodeEditorSetup-<arch>-<version>.exe` | NSIS installer |
+| macOS | x64 (Intel) | `CodeEditor.x64.<version>.dmg` | ad-hoc signed DMG |
+| macOS | arm64 (Apple Silicon) | `CodeEditor.arm64.<version>.dmg` | ad-hoc signed DMG |
+| Linux | x86_64 | `CodeEditor-<version>-anylinux-x86_64.AppImage` | AppImage |
+| Linux | aarch64 | `CodeEditor-<version>-anylinux-aarch64.AppImage` | AppImage |
 
-<table>
-   <tr>
-      <td><a href="https://github.com/jaredreich" target="_blank">@jaredreich</a></td>
-      <td>for the logo</td>
-   </tr>
-   <tr>
-      <td><a href="https://github.com/PalinuroSec" target="_blank">@PalinuroSec</a></td>
-      <td>for CDN and domain name</td>
-   </tr>
-   <tr>
-      <td><a href="https://www.macstadium.com" target="_blank"><img src="https://images.prismic.io/macstadium/66fbce64-707e-41f3-b547-241908884716_MacStadium_Logo.png?w=128&q=75" width="128" height="49" alt="MacStadium logo" /></a></td>
-      <td>for providing a Mac mini M1</td>
-   </tr>
-   <tr>
-      <td><a href="https://github.com/daiyam" target="_blank">@daiyam</a></td>
-      <td>for macOS certificate</td>
-   </tr>
-   <tr>
-      <td><a href="https://signpath.org/" target="_blank"><img src="https://avatars.githubusercontent.com/u/34448643" height="30" alt="SignPath logo" /></a></td>
-      <td>free code signing on Windows provided by <a href="https://signpath.io/" target="_blank">SignPath.io</a>, certificate by <a href="https://signpath.org/" target="_blank">SignPath Foundation</a></td>
-   </tr>
-</table>
+Every file is published together with `.sha1` and `.sha256` checksums.
 
-## <a id="license"></a>License
+### Build from source
 
-[MIT](https://github.com/VSCodium/vscodium/blob/master/LICENSE)
+The scripts clone Microsoft's `vscode` repository and run the official build, so you need Node.js, Python and Git:
+
+```bash
+git clone https://github.com/Mutantcat-Working-Group/CodeEditor.git
+cd CodeEditor
+
+./get_repo.sh       # clone the matching vscode revision
+./build.sh          # build the editor
+./prepare_assets.sh # package artifacts for the current platform
+```
+
+See [docs/howto-build.md](docs/howto-build.md) for details.
+
+### Versioning
+
+The current version is `1.0.20260921` and lives in [`version.json`](version.json). Change that file to bump the version; the workflow reads it as the release version.
+
+### Automated releases
+
+The workflow lives in [`.github/workflows/release-packages.yml`](.github/workflows/release-packages.yml). It runs when a release is published, when a `v*` or `[0-9]*` tag is pushed, or when it is triggered manually, and it builds the Linux, Windows and macOS packages in parallel before uploading them to the matching release.
+
+### First launch on macOS
+
+Because the DMGs use an ad-hoc signature instead of an Apple developer certificate, Gatekeeper may warn that the developer cannot be verified. Right-click CodeEditor and choose Open, or run:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/CodeEditor.app
+```
+
+### License
+
+The build scripts are released under the [MIT](LICENSE) license, and so are the binaries they produce.

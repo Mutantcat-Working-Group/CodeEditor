@@ -10,11 +10,16 @@ fi
 
 REPOSITORY_OWNER="${ASSETS_REPOSITORY/\/*/}"
 REPOSITORY_NAME="${ASSETS_REPOSITORY/*\//}"
+# The tag and the version can differ (e.g. `v1.0.20260921` vs `1.0.20260921`),
+# so keep both and only use the tag when talking to GitHub.
+RELEASE_TAG="${RELEASE_TAG:-${RELEASE_VERSION}}"
 
 npm install -g github-release-cli
 
-if [[ $( gh release view "${RELEASE_VERSION}" --repo "${ASSETS_REPOSITORY}" 2>&1 ) =~ "release not found" ]]; then
-  echo "Creating release '${RELEASE_VERSION}'"
+echo "Releasing '${RELEASE_VERSION}' on tag '${RELEASE_TAG}'"
+
+if ! gh release view "${RELEASE_TAG}" --repo "${ASSETS_REPOSITORY}" >/dev/null 2>&1; then
+  echo "Creating release '${RELEASE_TAG}'"
 
   . ./utils.sh
 
@@ -35,24 +40,38 @@ if [[ $( gh release view "${RELEASE_VERSION}" --repo "${ASSETS_REPOSITORY}" 2>&1
     replace "s|@@RELEASE_NOTES@@||g" release_notes.md
     replace "s|@@VERSION@@|${VERSION}|g" release_notes.md
 
-    gh release create "${RELEASE_VERSION}" --repo "${ASSETS_REPOSITORY}" --title "${RELEASE_VERSION}" --notes-file release_notes.md
+    if ! gh release create "${RELEASE_TAG}" --repo "${ASSETS_REPOSITORY}" --title "${RELEASE_TAG}" --notes-file release_notes.md; then
+      if ! gh release view "${RELEASE_TAG}" --repo "${ASSETS_REPOSITORY}" >/dev/null 2>&1; then
+        echo "Failed to create release '${RELEASE_TAG}'" >&2
+        exit 1
+      fi
+
+      echo "Release '${RELEASE_TAG}' already exists"
+    fi
   else
-    gh release create "${RELEASE_VERSION}" --repo "${ASSETS_REPOSITORY}" --title "${RELEASE_VERSION}" --generate-notes
+    if ! gh release create "${RELEASE_TAG}" --repo "${ASSETS_REPOSITORY}" --title "${RELEASE_TAG}" --generate-notes; then
+      if ! gh release view "${RELEASE_TAG}" --repo "${ASSETS_REPOSITORY}" >/dev/null 2>&1; then
+        echo "Failed to create release '${RELEASE_TAG}'" >&2
+        exit 1
+      fi
 
-    RELEASE_NOTES=$( gh release view "${RELEASE_VERSION}" --repo "${ASSETS_REPOSITORY}" --json "body" --jq ".body" )
+      echo "Release '${RELEASE_TAG}' already exists"
+    else
+      RELEASE_NOTES=$( gh release view "${RELEASE_TAG}" --repo "${ASSETS_REPOSITORY}" --json "body" --jq ".body" )
 
-    replace "s|@@APP_NAME@@|${APP_NAME}|g" release_notes.md
-    replace "s|@@APP_NAME_LC@@|${APP_NAME_LC}|g" release_notes.md
-    replace "s|@@APP_NAME_QUALITY@@|${APP_NAME}|g" release_notes.md
-    replace "s|@@ASSETS_REPOSITORY@@|${ASSETS_REPOSITORY}|g" release_notes.md
-    replace "s|@@BINARY_NAME@@|${BINARY_NAME}|g" release_notes.md
-    replace "s|@@MS_TAG@@|${MS_TAG}|g" release_notes.md
-    replace "s|@@MS_URL@@|https://code.visualstudio.com/updates/v$( echo "${MS_TAG//./_}" | cut -d'_' -f 1,2 )|g" release_notes.md
-    replace "s|@@QUALITY@@||g" release_notes.md
-    replace "s|@@RELEASE_NOTES@@|${RELEASE_NOTES//$'\n'/\\n}|g" release_notes.md
-    replace "s|@@VERSION@@|${VERSION}|g" release_notes.md
+      replace "s|@@APP_NAME@@|${APP_NAME}|g" release_notes.md
+      replace "s|@@APP_NAME_LC@@|${APP_NAME_LC}|g" release_notes.md
+      replace "s|@@APP_NAME_QUALITY@@|${APP_NAME}|g" release_notes.md
+      replace "s|@@ASSETS_REPOSITORY@@|${ASSETS_REPOSITORY}|g" release_notes.md
+      replace "s|@@BINARY_NAME@@|${BINARY_NAME}|g" release_notes.md
+      replace "s|@@MS_TAG@@|${MS_TAG}|g" release_notes.md
+      replace "s|@@MS_URL@@|https://code.visualstudio.com/updates/v$( echo "${MS_TAG//./_}" | cut -d'_' -f 1,2 )|g" release_notes.md
+      replace "s|@@QUALITY@@||g" release_notes.md
+      replace "s|@@RELEASE_NOTES@@|${RELEASE_NOTES//$'\n'/\\n}|g" release_notes.md
+      replace "s|@@VERSION@@|${VERSION}|g" release_notes.md
 
-    gh release edit "${RELEASE_VERSION}" --repo "${ASSETS_REPOSITORY}" --notes-file release_notes.md
+      gh release edit "${RELEASE_TAG}" --repo "${ASSETS_REPOSITORY}" --notes-file release_notes.md
+    fi
   fi
 fi
 
@@ -63,19 +82,19 @@ set +e
 for FILE in *; do
   if [[ -f "${FILE}" ]] && [[ "${FILE}" != *.sha1 ]] && [[ "${FILE}" != *.sha256 ]]; then
     echo "::group::Uploading '${FILE}' at $( date "+%T" )"
-    gh release upload --repo "${ASSETS_REPOSITORY}" "${RELEASE_VERSION}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
+    gh release upload --repo "${ASSETS_REPOSITORY}" "${RELEASE_TAG}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
 
     EXIT_STATUS=$?
     echo "exit: ${EXIT_STATUS}"
 
     if (( "${EXIT_STATUS}" )); then
       for (( i=0; i<10; i++ )); do
-        github-release delete --owner "${REPOSITORY_OWNER}" --repo "${REPOSITORY_NAME}" --tag "${RELEASE_VERSION}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
+        github-release delete --owner "${REPOSITORY_OWNER}" --repo "${REPOSITORY_NAME}" --tag "${RELEASE_TAG}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
 
         sleep $(( 15 * (i + 1)))
 
         echo "RE-Uploading '${FILE}' at $( date "+%T" )"
-        gh release upload --repo "${ASSETS_REPOSITORY}" "${RELEASE_VERSION}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
+        gh release upload --repo "${ASSETS_REPOSITORY}" "${RELEASE_TAG}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
 
         EXIT_STATUS=$?
         echo "exit: ${EXIT_STATUS}"
@@ -89,7 +108,7 @@ for FILE in *; do
       if (( "${EXIT_STATUS}" )); then
         echo "'${FILE}' hasn't been uploaded!"
 
-        github-release delete --owner "${REPOSITORY_OWNER}" --repo "${REPOSITORY_NAME}" --tag "${RELEASE_VERSION}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
+        github-release delete --owner "${REPOSITORY_OWNER}" --repo "${REPOSITORY_NAME}" --tag "${RELEASE_TAG}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
 
         exit 1
       fi

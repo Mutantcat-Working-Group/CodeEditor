@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+mkdir -p assets
+
 if [[ -n "${CERTIFICATE_OSX_P12_DATA}" ]]; then
   if [[ "${CI_BUILD}" == "no" ]]; then
     RUNNER_TEMP="${TMPDIR}"
@@ -54,6 +56,10 @@ if [[ -n "${CERTIFICATE_OSX_P12_DATA}" ]]; then
   rm "${ZIP_FILE}"
 
   cd ..
+else
+  echo "+ ad-hoc signing"
+  # shellcheck disable=SC2046
+  codesign --force --deep --sign - --timestamp=none "VSCode-darwin-${VSCODE_ARCH}/"*.app
 fi
 
 if [[ "${SHOULD_BUILD_ZIP}" != "no" ]]; then
@@ -63,12 +69,17 @@ if [[ "${SHOULD_BUILD_ZIP}" != "no" ]]; then
   cd ..
 fi
 
-if [[ -n "${CERTIFICATE_OSX_P12_DATA}" && "${SHOULD_BUILD_DMG}" != "no" ]]; then
+if [[ "${SHOULD_BUILD_DMG}" != "no" ]]; then
   echo "Building and moving DMG"
   pushd "VSCode-darwin-${VSCODE_ARCH}"
   npx create-dmg ./*.app .
   mv ./*.dmg "../assets/${APP_NAME}.${VSCODE_ARCH}.${RELEASE_VERSION}.dmg"
   popd
+
+  if [[ -z "${CERTIFICATE_OSX_P12_DATA}" ]]; then
+    echo "+ ad-hoc signing DMG"
+    codesign --force --sign - "assets/${APP_NAME}.${VSCODE_ARCH}.${RELEASE_VERSION}.dmg"
+  fi
 fi
 
 if [[ "${SHOULD_BUILD_SRC}" == "yes" ]]; then
