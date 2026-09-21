@@ -66,7 +66,7 @@ fi
 
 if [[ "${VSCODE_QUALITY}" == "insider" ]]; then
   setpath "product" "nameShort" "CodeEditor - Insiders"
-  setpath "product" "nameLong" "CodeEditor 蜥蜴编辑器 - Insiders"
+  setpath "product" "nameLong" "蜥蜴编辑器 - Insiders"
   setpath "product" "applicationName" "codeeditor-insiders"
   setpath "product" "dataFolderName" ".codeeditor-insiders"
   setpath "product" "linuxIconName" "codeeditor-insiders"
@@ -94,7 +94,7 @@ if [[ "${VSCODE_QUALITY}" == "insider" ]]; then
   setpath "product" "win32ContextMenu.arm64.clsid" "7544C31C-BDBF-4DDF-B15E-F73A46D6723D"
 else
   setpath "product" "nameShort" "CodeEditor"
-  setpath "product" "nameLong" "CodeEditor 蜥蜴编辑器"
+  setpath "product" "nameLong" "蜥蜴编辑器"
   setpath "product" "applicationName" "codeeditor"
   setpath "product" "linuxIconName" "codeeditor"
   setpath "product" "quality" "stable"

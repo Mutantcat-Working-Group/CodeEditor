@@ -1,6 +1,7 @@
 <div align=center>
 <img src="./icon.png" style="width:100px;" width="100"/>
-<h2>CodeEditor 蜥蜴编辑器</h2>
+<h2>蜥蜴编辑器</h2>
+<p>CodeEditor</p>
 </div>
 
 语言：<a href="#zh-cn">中文</a> ｜ <a href="#english">English</a>
@@ -10,7 +11,7 @@
 ### 一、项目简介
 - CodeEditor（中文名：蜥蜴编辑器）是一套构建脚本，它把 [Microsoft 的 vscode 仓库](https://github.com/microsoft/vscode) 打包成自由许可的二进制文件，并配好一套开箱可用的默认配置。
 - 本项目由 Mutantcat Working Group 维护，包名统一为 `org.mutantcat.*`，图标为 [`icon.png`](./icon.png)。
-- 当前版本 `1.0.20260921`，记录在 [`version.json`](version.json) 中，修改该文件即可升级版本号。
+- 当前版本 `1.0.20260922`，记录在 [`version.json`](version.json) 中，修改该文件即可升级版本号。
 
 ### 二、功能特性
 - 默认关闭遥测与追踪，扩展市场指向 [open-vsx.org](https://open-vsx.org)
@@ -28,8 +29,8 @@
 
 ```
 CodeEditor.exe --locale=en                                     # Windows 临时切换
-open -a CodeEditor --args --locale=en                          # macOS 临时切换
-./CodeEditor-1.0.20260921-anylinux-x86_64.AppImage --locale=en # Linux 临时切换
+open -a 蜥蜴编辑器 --args --locale=en                          # macOS 临时切换
+./CodeEditor-1.0.20260922-anylinux-x86_64.AppImage --locale=en # Linux 临时切换
 ```
 
 ### 四、下载与安装
@@ -39,39 +40,39 @@ open -a CodeEditor --args --locale=en                          # macOS 临时切
 
 ```
 Windows
-   下载 CodeEditorSetup-x64-1.0.20260921.exe 或 CodeEditorSetup-arm64-1.0.20260921.exe，双击运行。
+   下载 CodeEditorSetup-x64-1.0.20260922.exe 或 CodeEditorSetup-arm64-1.0.20260922.exe，双击运行。
    默认安装到 %LOCALAPPDATA%\Programs\CodeEditor，不需要管理员权限，可在系统设置中正常卸载。
 
 macOS
-   下载 CodeEditor.x64.1.0.20260921.dmg（Intel）或 CodeEditor.arm64.1.0.20260921.dmg（Apple Silicon）。
-   打开后把 CodeEditor 拖到 Applications，两个 DMG 都带有 ad-hoc 签名。
+   下载 CodeEditor.x64.1.0.20260922.dmg（Intel）或 CodeEditor.arm64.1.0.20260922.dmg（Apple Silicon）。
+   打开后把「蜥蜴编辑器」拖到 Applications，两个 DMG 都带有 ad-hoc 签名。
 
 Linux
-   下载 CodeEditor-1.0.20260921-anylinux-x86_64.AppImage 或 CodeEditor-1.0.20260921-anylinux-aarch64.AppImage。
-   chmod +x CodeEditor-1.0.20260921-anylinux-x86_64.AppImage
-   ./CodeEditor-1.0.20260921-anylinux-x86_64.AppImage
+   下载 CodeEditor-1.0.20260922-anylinux-x86_64.AppImage 或 CodeEditor-1.0.20260922-anylinux-aarch64.AppImage。
+   chmod +x CodeEditor-1.0.20260922-anylinux-x86_64.AppImage
+   ./CodeEditor-1.0.20260922-anylinux-x86_64.AppImage
 ```
 
 ### 五、安装包一览
 
 | 平台 | 架构 | 文件 | 格式 |
 | --- | --- | --- | --- |
-| Windows | x64 | `CodeEditorSetup-x64-1.0.20260921.exe` | NSIS 安装包 |
-| Windows | arm64 | `CodeEditorSetup-arm64-1.0.20260921.exe` | NSIS 安装包 |
-| macOS | x64（Intel） | `CodeEditor.x64.1.0.20260921.dmg` | ad-hoc 签名 DMG |
-| macOS | arm64（Apple Silicon） | `CodeEditor.arm64.1.0.20260921.dmg` | ad-hoc 签名 DMG |
-| Linux | x86_64 | `CodeEditor-1.0.20260921-anylinux-x86_64.AppImage` | AppImage |
-| Linux | aarch64 | `CodeEditor-1.0.20260921-anylinux-aarch64.AppImage` | AppImage |
+| Windows | x64 | `CodeEditorSetup-x64-1.0.20260922.exe` | NSIS 安装包 |
+| Windows | arm64 | `CodeEditorSetup-arm64-1.0.20260922.exe` | NSIS 安装包 |
+| macOS | x64（Intel） | `CodeEditor.x64.1.0.20260922.dmg` | ad-hoc 签名 DMG |
+| macOS | arm64（Apple Silicon） | `CodeEditor.arm64.1.0.20260922.dmg` | ad-hoc 签名 DMG |
+| Linux | x86_64 | `CodeEditor-1.0.20260922-anylinux-x86_64.AppImage` | AppImage |
+| Linux | aarch64 | `CodeEditor-1.0.20260922-anylinux-aarch64.AppImage` | AppImage |
 
 每个文件都会同时上传 `.sha1` 与 `.sha256` 校验和，可用于核对下载内容。
 
 ### 六、macOS 首次启动
 1. 由于 DMG 使用 ad-hoc 签名而非 Apple 开发者证书，首次打开时 Gatekeeper 可能提示无法验证开发者
-2. 右键点击 CodeEditor 选择“打开”即可
+2. 右键点击「蜥蜴编辑器」选择“打开”即可
 3. 也可以在终端执行下面这行命令移除隔离属性
 
 ```
-xattr -dr com.apple.quarantine /Applications/CodeEditor.app
+xattr -dr com.apple.quarantine "/Applications/蜥蜴编辑器.app"
 ```
 
 ### 七、从源码构建
@@ -102,7 +103,7 @@ cd CodeEditor
 ### 1. About
 - CodeEditor (蜥蜴编辑器) is a repository of build scripts that turns [Microsoft's vscode repository](https://github.com/microsoft/vscode) into freely licensed binaries with a community-driven default configuration.
 - It is maintained by the Mutantcat Working Group, uses `org.mutantcat.*` package identifiers, and ships with [`icon.png`](./icon.png).
-- The current version is `1.0.20260921` and lives in [`version.json`](version.json); edit that file to bump the version.
+- The current version is `1.0.20260922` and lives in [`version.json`](version.json); edit that file to bump the version.
 
 ### 2. Features
 - Telemetry and tracking disabled by default, extensions served from [open-vsx.org](https://open-vsx.org)
@@ -120,8 +121,8 @@ cd CodeEditor
 
 ```
 CodeEditor.exe --locale=en                                     # Windows, one-off switch
-open -a CodeEditor --args --locale=en                          # macOS, one-off switch
-./CodeEditor-1.0.20260921-anylinux-x86_64.AppImage --locale=en # Linux, one-off switch
+open -a 蜥蜴编辑器 --args --locale=en                          # macOS, one-off switch
+./CodeEditor-1.0.20260922-anylinux-x86_64.AppImage --locale=en # Linux, one-off switch
 ```
 
 ### 4. Download and install
@@ -131,40 +132,40 @@ open -a CodeEditor --args --locale=en                          # macOS, one-off 
 
 ```
 Windows
-   Download CodeEditorSetup-x64-1.0.20260921.exe or CodeEditorSetup-arm64-1.0.20260921.exe and run it.
+   Download CodeEditorSetup-x64-1.0.20260922.exe or CodeEditorSetup-arm64-1.0.20260922.exe and run it.
    It installs into %LOCALAPPDATA%\Programs\CodeEditor without asking for administrator rights,
    and can be removed from Windows Settings.
 
 macOS
-   Download CodeEditor.x64.1.0.20260921.dmg (Intel) or CodeEditor.arm64.1.0.20260921.dmg (Apple Silicon).
-   Drag CodeEditor into Applications. Both DMGs carry an ad-hoc signature.
+   Download CodeEditor.x64.1.0.20260922.dmg (Intel) or CodeEditor.arm64.1.0.20260922.dmg (Apple Silicon).
+   Drag 蜥蜴编辑器 into Applications. Both DMGs carry an ad-hoc signature.
 
 Linux
-   Download CodeEditor-1.0.20260921-anylinux-x86_64.AppImage or CodeEditor-1.0.20260921-anylinux-aarch64.AppImage.
-   chmod +x CodeEditor-1.0.20260921-anylinux-x86_64.AppImage
-   ./CodeEditor-1.0.20260921-anylinux-x86_64.AppImage
+   Download CodeEditor-1.0.20260922-anylinux-x86_64.AppImage or CodeEditor-1.0.20260922-anylinux-aarch64.AppImage.
+   chmod +x CodeEditor-1.0.20260922-anylinux-x86_64.AppImage
+   ./CodeEditor-1.0.20260922-anylinux-x86_64.AppImage
 ```
 
 ### 5. Packages
 
 | Platform | Architecture | File | Format |
 | --- | --- | --- | --- |
-| Windows | x64 | `CodeEditorSetup-x64-1.0.20260921.exe` | NSIS installer |
-| Windows | arm64 | `CodeEditorSetup-arm64-1.0.20260921.exe` | NSIS installer |
-| macOS | x64 (Intel) | `CodeEditor.x64.1.0.20260921.dmg` | ad-hoc signed DMG |
-| macOS | arm64 (Apple Silicon) | `CodeEditor.arm64.1.0.20260921.dmg` | ad-hoc signed DMG |
-| Linux | x86_64 | `CodeEditor-1.0.20260921-anylinux-x86_64.AppImage` | AppImage |
-| Linux | aarch64 | `CodeEditor-1.0.20260921-anylinux-aarch64.AppImage` | AppImage |
+| Windows | x64 | `CodeEditorSetup-x64-1.0.20260922.exe` | NSIS installer |
+| Windows | arm64 | `CodeEditorSetup-arm64-1.0.20260922.exe` | NSIS installer |
+| macOS | x64 (Intel) | `CodeEditor.x64.1.0.20260922.dmg` | ad-hoc signed DMG |
+| macOS | arm64 (Apple Silicon) | `CodeEditor.arm64.1.0.20260922.dmg` | ad-hoc signed DMG |
+| Linux | x86_64 | `CodeEditor-1.0.20260922-anylinux-x86_64.AppImage` | AppImage |
+| Linux | aarch64 | `CodeEditor-1.0.20260922-anylinux-aarch64.AppImage` | AppImage |
 
 Every file is published together with `.sha1` and `.sha256` checksums.
 
 ### 6. First launch on macOS
 1. Because the DMGs use an ad-hoc signature instead of an Apple developer certificate, Gatekeeper may warn that the developer cannot be verified
-2. Right-click CodeEditor and choose Open
+2. Right-click 蜥蜴编辑器 and choose Open
 3. Or strip the quarantine attribute from a terminal
 
 ```
-xattr -dr com.apple.quarantine /Applications/CodeEditor.app
+xattr -dr com.apple.quarantine "/Applications/蜥蜴编辑器.app"
 ```
 
 ### 7. Build from source

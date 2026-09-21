@@ -7,7 +7,7 @@ ManifestDPIAware true
 ; User-facing name. APP_NAME above stays ASCII because it also builds install
 ; paths, registry keys and the output file name; this one is only ever shown.
 !ifndef APP_DISPLAY_NAME
-  !define APP_DISPLAY_NAME "CodeEditor 蜥蜴编辑器"
+  !define APP_DISPLAY_NAME "蜥蜴编辑器"
 !endif
 !ifndef APP_VERSION
   !define APP_VERSION "1.0.0"
