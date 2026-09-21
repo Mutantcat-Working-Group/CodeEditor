@@ -201,6 +201,19 @@ else
 fi
 # }}}
 
+# {{{ bundled language packs
+# The Simplified Chinese language pack ships with the application. Copy it into
+# the source tree so the packaging task can put it into `out`, next to the NLS
+# metadata that the main process reads at startup.
+if [[ -d "../languagepacks" ]]; then
+  mkdir -p languagepacks
+  cp -Rf ../languagepacks/. languagepacks/
+else
+  echo "languagepacks dir not found: ../languagepacks" >&2
+  exit 1
+fi
+# }}}
+
 set -x
 
 # {{{ install dependencies

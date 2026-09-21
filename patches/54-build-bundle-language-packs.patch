@@ -1,0 +1,26 @@
+diff --git a/build/gulpfile.vscode.ts b/build/gulpfile.vscode.ts
+index 7eb0a82..7767c6a 100644
+--- a/build/gulpfile.vscode.ts
++++ b/build/gulpfile.vscode.ts
+@@ -369,6 +369,13 @@ function packageTask(platform: string, arch: string, sourceFolderName: string, d
+ 		// TODO the API should be copied to `out` during compile, not here
+ 		const api = gulp.src('src/vscode-dts/vscode.d.ts').pipe(rename('out/vscode-dts/vscode.d.ts'));
+ 
++		// The language packs that ship with the application live in `out`, next
++		// to the NLS metadata, so that the main process can resolve them
++		// without any language pack extension being installed.
++		const languagePacks = gulp.src(['languagepacks/**', '!languagepacks/README.md'], { base: '.', dot: true, allowEmpty: true })
++			.pipe(util.filter(data => !data.isDirectory()))
++			.pipe(rename(function (path) { path.dirname = path.dirname!.replace(new RegExp('^languagepacks'), "out/languagepacks"); }));
++
+ 		const telemetry = gulp.src('.build/telemetry/**', { base: '.build/telemetry', dot: true });
+ 
+ 		const jsFilter = util.filter(data => !data.isDirectory() && /\.js$/.test(data.path));
+@@ -443,6 +450,7 @@ function packageTask(platform: string, arch: string, sourceFolderName: string, d
+ 			productJsonStream,
+ 			license,
+ 			api,
++			languagePacks,
+ 			telemetry,
+ 			sources,
+ 			deps

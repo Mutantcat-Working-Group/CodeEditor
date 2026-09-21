@@ -1,0 +1,60 @@
+diff --git a/src/vs/base/node/nls.ts b/src/vs/base/node/nls.ts
+index 0bb75a1..6d375e1 100644
+--- a/src/vs/base/node/nls.ts
++++ b/src/vs/base/node/nls.ts
+@@ -3,7 +3,7 @@
+  *  Licensed under the MIT License. See License.txt in the project root for license information.
+  *--------------------------------------------------------------------------------------------*/
+ 
+-import { join } from '../common/path.js';
++import { isAbsolute, join } from '../common/path.js';
+ import { promises } from 'fs';
+ import { mark } from '../common/performance.js';
+ import { ILanguagePacks, INLSConfiguration } from '../../nls.js';
+@@ -53,7 +53,7 @@ export async function resolveNLSConfiguration({ userLocale, osLocale, userDataPa
+ 	}
+ 
+ 	try {
+-		const languagePacks = await getLanguagePackConfigurations(userDataPath);
++		const languagePacks = await getLanguagePackConfigurations(userDataPath, nlsMetadataPath);
+ 		if (!languagePacks) {
+ 			return defaultNLSConfiguration(userLocale, osLocale, nlsMetadataPath);
+ 		}
+@@ -167,11 +167,36 @@ export async function resolveNLSConfiguration({ userLocale, osLocale, userDataPa
+  * translation files.
+  *
+  * The file is updated whenever a new language pack is installed or removed.
++ * CodeEditor also ships a language pack of its own in `out/languagepacks`,
++ * which is used whenever the user has not installed a language pack.
+  */
+-async function getLanguagePackConfigurations(userDataPath: string): Promise<ILanguagePacks | undefined> {
++async function getLanguagePackConfigurations(userDataPath: string, nlsMetadataPath: string): Promise<ILanguagePacks | undefined> {
+ 	const configFile = join(userDataPath, 'languagepacks.json');
+ 	try {
+ 		return JSON.parse(await promises.readFile(configFile, 'utf-8'));
++	} catch (err) {
++		// Do nothing. If we can't read the file we have no language pack config.
++	}
++
++	const bundledRoot = join(nlsMetadataPath, 'languagepacks');
++	try {
++		const bundled = JSON.parse(await promises.readFile(join(bundledRoot, 'languagepacks.json'), 'utf-8')) as ILanguagePacks;
++		for (const languagePack of Object.values(bundled)) {
++			const translations = languagePack?.translations;
++			if (!translations) {
++				continue;
++			}
++
++			// The bundled pack points at its message bundles relative to its
++			// own folder. Turn those into absolute paths.
++			for (const [id, path] of Object.entries(translations)) {
++				if (typeof path === 'string' && !isAbsolute(path)) {
++					translations[id] = join(bundledRoot, path);
++				}
++			}
++		}
++
++		return bundled;
+ 	} catch (err) {
+ 		return undefined; // Do nothing. If we can't read the file we have no language pack config.
+ 	}

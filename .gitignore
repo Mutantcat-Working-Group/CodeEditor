@@ -20,3 +20,8 @@ stores/snapcraft/insider/*.snap
 stores/snapcraft/stable/*.snap
 font-size/node_modules/
 font-size/generate-css.js
+
+# `vscode*` and `VSCode*` above are matched case-insensitively when the
+# checkout sits on a case-insensitive filesystem, which would also swallow the
+# bundled language pack translations. Keep that directory fully tracked.
+!languagepacks/**

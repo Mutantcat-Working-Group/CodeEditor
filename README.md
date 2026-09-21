@@ -20,7 +20,19 @@
 - Linux 提供 AppImage，无需安装即可运行
 - 发布 Release 或推送版本 tag 时，由 GitHub Actions 自动构建并上传安装包
 
-### 三、下载与安装
+### 三、界面语言
+- 界面默认使用简体中文，语言包随安装包一起分发，不需要额外安装
+- 语言包位于安装目录的 `resources/app/out/languagepacks/`，源码仓库中对应 [`languagepacks/`](languagepacks/) 目录
+- 想临时换回英文，启动时加 `--locale=en`；想永久切换，在用户目录的 `argv.json` 里写入 `"locale": "en"`
+- 也可以用命令面板（`Ctrl+Shift+P`）执行“配置显示语言”，选中 English 后重启即可
+
+```
+CodeEditor.exe --locale=en                                     # Windows 临时切换
+open -a CodeEditor --args --locale=en                          # macOS 临时切换
+./CodeEditor-1.0.20260921-anylinux-x86_64.AppImage --locale=en # Linux 临时切换
+```
+
+### 四、下载与安装
 1. 打开 [Releases](https://github.com/Mutantcat-Working-Group/CodeEditor/releases/latest) 页面
 2. 按下表选择自己平台和架构对应的文件
 3. 下载后直接运行，无需额外依赖
@@ -40,7 +52,7 @@ Linux
    ./CodeEditor-1.0.20260921-anylinux-x86_64.AppImage
 ```
 
-### 四、安装包一览
+### 五、安装包一览
 
 | 平台 | 架构 | 文件 | 格式 |
 | --- | --- | --- | --- |
@@ -53,7 +65,7 @@ Linux
 
 每个文件都会同时上传 `.sha1` 与 `.sha256` 校验和，可用于核对下载内容。
 
-### 五、macOS 首次启动
+### 六、macOS 首次启动
 1. 由于 DMG 使用 ad-hoc 签名而非 Apple 开发者证书，首次打开时 Gatekeeper 可能提示无法验证开发者
 2. 右键点击 CodeEditor 选择“打开”即可
 3. 也可以在终端执行下面这行命令移除隔离属性
@@ -62,7 +74,7 @@ Linux
 xattr -dr com.apple.quarantine /Applications/CodeEditor.app
 ```
 
-### 六、从源码构建
+### 七、从源码构建
 1. 构建脚本会克隆 Microsoft 的 vscode 仓库并执行官方构建流程，因此需要 Node.js、Python 与 Git
 2. 依次执行下面三条命令
 
@@ -77,12 +89,12 @@ cd CodeEditor
 
 更详细的说明见 [docs/howto-build.md](docs/howto-build.md)。
 
-### 七、自动发布
+### 八、自动发布
 1. 工作流定义见 [`.github/workflows/release-packages.yml`](.github/workflows/release-packages.yml)
 2. 触发方式有三种：发布 Release、推送 `v*` 或 `[0-9]*` 开头的 tag、在 Actions 页面手动触发
 3. 触发后并行构建 Linux、Windows 与 macOS 三个平台的安装包，并上传到对应的 Release 中
 
-### 八、许可证
+### 九、许可证
 - 本项目构建脚本基于 [MIT](LICENSE) 许可发布，构建产物同样以 MIT 许可分发。
 
 ## <a id="english"></a>English
@@ -100,7 +112,19 @@ cd CodeEditor
 - Linux AppImages that run without installation
 - GitHub Actions builds and uploads every package when a release is published or a version tag is pushed
 
-### 3. Download and install
+### 3. Interface language
+- The interface defaults to Simplified Chinese, and the language pack ships inside the installer, so there is nothing extra to install
+- It lives at `resources/app/out/languagepacks/` inside the install directory and comes from [`languagepacks/`](languagepacks/) in this repository
+- Pass `--locale=en` for a one-off switch back to English, or write `"locale": "en"` into `argv.json` in your user directory to make it permanent
+- The command palette (`Ctrl+Shift+P`) also has a "Configure Display Language" entry, which writes `argv.json` for you
+
+```
+CodeEditor.exe --locale=en                                     # Windows, one-off switch
+open -a CodeEditor --args --locale=en                          # macOS, one-off switch
+./CodeEditor-1.0.20260921-anylinux-x86_64.AppImage --locale=en # Linux, one-off switch
+```
+
+### 4. Download and install
 1. Open the [Releases](https://github.com/Mutantcat-Working-Group/CodeEditor/releases/latest) page
 2. Pick the file that matches your platform and architecture from the table below
 3. Download it and run it, no extra dependencies required
@@ -121,7 +145,7 @@ Linux
    ./CodeEditor-1.0.20260921-anylinux-x86_64.AppImage
 ```
 
-### 4. Packages
+### 5. Packages
 
 | Platform | Architecture | File | Format |
 | --- | --- | --- | --- |
@@ -134,7 +158,7 @@ Linux
 
 Every file is published together with `.sha1` and `.sha256` checksums.
 
-### 5. First launch on macOS
+### 6. First launch on macOS
 1. Because the DMGs use an ad-hoc signature instead of an Apple developer certificate, Gatekeeper may warn that the developer cannot be verified
 2. Right-click CodeEditor and choose Open
 3. Or strip the quarantine attribute from a terminal
@@ -143,7 +167,7 @@ Every file is published together with `.sha1` and `.sha256` checksums.
 xattr -dr com.apple.quarantine /Applications/CodeEditor.app
 ```
 
-### 6. Build from source
+### 7. Build from source
 1. The scripts clone Microsoft's vscode repository and run the official build, so you need Node.js, Python and Git
 2. Run the three commands below
 
@@ -158,10 +182,10 @@ cd CodeEditor
 
 See [docs/howto-build.md](docs/howto-build.md) for details.
 
-### 7. Automated releases
+### 8. Automated releases
 1. The workflow lives in [`.github/workflows/release-packages.yml`](.github/workflows/release-packages.yml)
 2. It runs when a release is published, when a `v*` or `[0-9]*` tag is pushed, or when triggered manually from the Actions page
 3. It then builds the Linux, Windows and macOS packages in parallel and uploads them to the matching release
 
-### 8. License
+### 9. License
 - The build scripts are released under the [MIT](LICENSE) license, and so are the binaries they produce.

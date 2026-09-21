@@ -10,3 +10,6 @@
 
 # Some mixed indentation due to alignment with previous line
 stores/snapcraft/{stable,insider}/snap/local/bin/electron-launch
+
+# Upstream third-party notices, kept verbatim
+languagepacks/zh-hans/ThirdPartyNotices.txt
