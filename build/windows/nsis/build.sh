@@ -37,17 +37,34 @@ fi
 
 mkdir -p "${ROOT_DIR}/assets"
 
+# Git for Windows rewrites arguments that look like Unix paths, so a plain
+# `/DAPP_NAME=...` reaches makensis as `C:/Program Files/Git/DAPP_NAME=...`.
+# Turn that conversion off; NSIS accepts a `-D` spelling too (IS_OPT in
+# Source/Platform.h treats `/` and `-` the same on Windows), and that form
+# survives the rewrite untouched, so try it second.
+export MSYS_NO_PATHCONV=1
+export MSYS2_ARG_CONV_EXCL="*"
+
+run_makensis() {
+  local switch="$1"
+
+  "${NSIS_BIN}" \
+    "${switch}APP_NAME=${APP_NAME}" \
+    "${switch}APP_VERSION=${APP_VERSION}" \
+    "${switch}APP_ARCH=${APP_ARCH}" \
+    "${switch}APP_EXE_NAME=${APP_EXE_NAME}" \
+    codeeditor.nsi
+}
+
 # makensis resolves relative paths against its working directory, so compile
 # from the script directory; the defaults in the .nsi file stay repository
 # relative and therefore resolve to the same places.
 cd "${SCRIPT_DIR}"
 
-"${NSIS_BIN}" \
-  /DAPP_NAME="${APP_NAME}" \
-  /DAPP_VERSION="${APP_VERSION}" \
-  /DAPP_ARCH="${APP_ARCH}" \
-  /DAPP_EXE_NAME="${APP_EXE_NAME}" \
-  codeeditor.nsi
+if ! run_makensis "/" && ! run_makensis "-"; then
+  echo "makensis rejected both the /D and -D switch spellings" >&2
+  exit 1
+fi
 
 INSTALLER="${ROOT_DIR}/assets/${APP_NAME}Setup-${APP_ARCH}-${APP_VERSION}.exe"
 
