@@ -5,6 +5,9 @@ APP_NAME="${APP_NAME:-CodeEditor}"
 APP_VERSION="${RELEASE_VERSION%-insider}"
 APP_ARCH="${VSCODE_ARCH:-x64}"
 NSIS_BIN="${NSIS_BIN:-makensis}"
+# The .nsi carries a UTF-8 display name, so tell makensis to read it as UTF-8
+# instead of the machine's ANSI code page.
+SCRIPT_CHARSET="${SCRIPT_CHARSET:-UTF8}"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOT_DIR="$( cd "${SCRIPT_DIR}/../../.." && pwd )"
@@ -49,10 +52,11 @@ run_makensis() {
   local switch="$1"
 
   "${NSIS_BIN}" \
-    "${switch}APP_NAME=${APP_NAME}" \
-    "${switch}APP_VERSION=${APP_VERSION}" \
-    "${switch}APP_ARCH=${APP_ARCH}" \
-    "${switch}APP_EXE_NAME=${APP_EXE_NAME}" \
+    "${switch}INPUTCHARSET" "${SCRIPT_CHARSET}" \
+    "${switch}DAPP_NAME=${APP_NAME}" \
+    "${switch}DAPP_VERSION=${APP_VERSION}" \
+    "${switch}DAPP_ARCH=${APP_ARCH}" \
+    "${switch}DAPP_EXE_NAME=${APP_EXE_NAME}" \
     codeeditor.nsi
 }
 
@@ -63,6 +67,7 @@ cd "${SCRIPT_DIR}"
 
 if ! run_makensis "/" && ! run_makensis "-"; then
   echo "makensis rejected both the /D and -D switch spellings" >&2
+  echo "tried: ${NSIS_BIN} /INPUTCHARSET ${SCRIPT_CHARSET} /DAPP_NAME=${APP_NAME} /DAPP_VERSION=${APP_VERSION} /DAPP_ARCH=${APP_ARCH} /DAPP_EXE_NAME=${APP_EXE_NAME} codeeditor.nsi" >&2
   exit 1
 fi
 

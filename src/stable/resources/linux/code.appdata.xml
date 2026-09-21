@@ -5,14 +5,15 @@
 	<project_license>@@LICENSE@@</project_license>
 	<name>@@NAME_LONG@@</name>
 	<url type="homepage">https://github.com/Mutantcat-Working-Group/CodeEditor</url>
-	<summary>CodeEditor. Code editing. Redefined.</summary>
+	<summary>CodeEditor 蜥蜴编辑器. Code editing. Redefined.</summary>
 	<description>
-		<p>CodeEditor is a free, open-source code editor built on Microsoft's VS Code.</p>
+		<p>CodeEditor 蜥蜴编辑器 is a free, open-source code editor built on Microsoft's VS Code.</p>
+		<p>CodeEditor 蜥蜴编辑器 是一个基于 Microsoft VS Code 的自由、开源代码编辑器。</p>
 	</description>
 	<screenshots>
 		<screenshot type="default">
 			<image>https://raw.githubusercontent.com/Mutantcat-Working-Group/CodeEditor/master/icons/codeeditor-icon.png</image>
-			<caption>CodeEditor</caption>
+			<caption>CodeEditor 蜥蜴编辑器</caption>
 		</screenshot>
 	</screenshots>
 </component>

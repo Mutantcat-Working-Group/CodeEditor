@@ -2,6 +2,7 @@ vscode*
 VS*/*
 VSCode*
 CodeEditor*
+!build/windows/nsis/codeeditor.nsi
 .DS_Store
 *.env
 assets/
