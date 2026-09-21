@@ -182,6 +182,25 @@ for file in ../patches/user/*.patch; do
 done
 # }}}
 
+# {{{ editor group watermark
+# The empty editor group shows a large "letterpress" graphic behind the shortcut
+# hints. Swap the upstream art for our lizard silhouette, one colour per theme.
+# Overwriting the files (instead of patching them) keeps this working even when
+# upstream redraws its own watermark.
+WATERMARK_DIR="src/vs/workbench/browser/parts/editor/media"
+
+if [[ -d "${WATERMARK_DIR}" ]]; then
+  for file in ../icons/watermark/letterpress-*.svg; do
+    if [[ -f "${file}" ]]; then
+      cp -f "${file}" "${WATERMARK_DIR}/"
+    fi
+  done
+else
+  echo "watermark dir not found: ${WATERMARK_DIR}" >&2
+  exit 1
+fi
+# }}}
+
 set -x
 
 # {{{ install dependencies
