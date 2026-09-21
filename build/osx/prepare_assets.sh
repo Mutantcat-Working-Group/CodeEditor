@@ -72,7 +72,14 @@ fi
 if [[ "${SHOULD_BUILD_DMG}" != "no" ]]; then
   echo "Building and moving DMG"
   pushd "VSCode-darwin-${VSCODE_ARCH}"
-  npx create-dmg ./*.app .
+  if [[ -n "${CERTIFICATE_OSX_P12_DATA}" ]]; then
+    npx create-dmg ./*.app .
+  else
+    # create-dmg signs the DMG with whatever identity it can find and gives up
+    # when there is none, which is always the case without a paid certificate.
+    # Let it skip signing and apply an ad-hoc signature below instead.
+    npx create-dmg --no-code-sign ./*.app .
+  fi
   mv ./*.dmg "../assets/${APP_NAME}.${VSCODE_ARCH}.${RELEASE_VERSION}.dmg"
   popd
 
