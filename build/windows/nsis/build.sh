@@ -19,10 +19,10 @@ if [[ ! -d "${ROOT_DIR}/VSCode-win32-${APP_ARCH}" ]]; then
   exit 1
 fi
 
-if [[ -z "${APP_EXE_NAME}" ]]; then
+if [[ -z "${APP_EXE_NAME:-}" ]]; then
   # the build renames the main executable after the product, but keep the
   # upstream name as a fallback so the shortcuts stay valid either way
-  for CANDIDATE in "${APP_NAME}.exe" "Code.exe"; do
+  for CANDIDATE in "${APP_NAME}.exe" "${APP_NAME} - OSS.exe" "Code.exe"; do
     if [[ -f "${ROOT_DIR}/VSCode-win32-${APP_ARCH}/${CANDIDATE}" ]]; then
       APP_EXE_NAME="${CANDIDATE}"
       break
@@ -30,7 +30,7 @@ if [[ -z "${APP_EXE_NAME}" ]]; then
   done
 fi
 
-if [[ -z "${APP_EXE_NAME}" ]]; then
+if [[ -z "${APP_EXE_NAME:-}" ]]; then
   echo "No executable found in ${ROOT_DIR}/VSCode-win32-${APP_ARCH}" >&2
   exit 1
 fi

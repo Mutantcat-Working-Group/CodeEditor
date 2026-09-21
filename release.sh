@@ -59,6 +59,12 @@ if ! gh release view "${RELEASE_TAG}" --repo "${ASSETS_REPOSITORY}" >/dev/null 2
     else
       RELEASE_NOTES=$( gh release view "${RELEASE_TAG}" --repo "${ASSETS_REPOSITORY}" --json "body" --jq ".body" )
 
+      # `replace` substitutes with sed using `|` as the delimiter, so escape the
+      # characters the generated notes could otherwise interpret
+      ESCAPED_NOTES="${RELEASE_NOTES//\\/\\\\}"
+      ESCAPED_NOTES="${ESCAPED_NOTES//|/\\|}"
+      ESCAPED_NOTES="${ESCAPED_NOTES//&/\\&}"
+
       replace "s|@@APP_NAME@@|${APP_NAME}|g" release_notes.md
       replace "s|@@APP_NAME_LC@@|${APP_NAME_LC}|g" release_notes.md
       replace "s|@@APP_NAME_QUALITY@@|${APP_NAME}|g" release_notes.md
@@ -67,7 +73,8 @@ if ! gh release view "${RELEASE_TAG}" --repo "${ASSETS_REPOSITORY}" >/dev/null 2
       replace "s|@@MS_TAG@@|${MS_TAG}|g" release_notes.md
       replace "s|@@MS_URL@@|https://code.visualstudio.com/updates/v$( echo "${MS_TAG//./_}" | cut -d'_' -f 1,2 )|g" release_notes.md
       replace "s|@@QUALITY@@||g" release_notes.md
-      replace "s|@@RELEASE_NOTES@@|${RELEASE_NOTES//$'\n'/\\n}|g" release_notes.md
+      replace "s|@@RELEASE_NOTES@@|${ESCAPED_NOTES//$'\n'/\\n}|g" release_notes.md
+      replace "s|@@RELEASE_TAG@@|${RELEASE_TAG}|g" release_notes.md
       replace "s|@@VERSION@@|${VERSION}|g" release_notes.md
 
       gh release edit "${RELEASE_TAG}" --repo "${ASSETS_REPOSITORY}" --notes-file release_notes.md
@@ -82,7 +89,7 @@ set +e
 for FILE in *; do
   if [[ -f "${FILE}" ]] && [[ "${FILE}" != *.sha1 ]] && [[ "${FILE}" != *.sha256 ]]; then
     echo "::group::Uploading '${FILE}' at $( date "+%T" )"
-    gh release upload --repo "${ASSETS_REPOSITORY}" "${RELEASE_TAG}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
+    gh release upload --clobber --repo "${ASSETS_REPOSITORY}" "${RELEASE_TAG}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
 
     EXIT_STATUS=$?
     echo "exit: ${EXIT_STATUS}"
@@ -94,7 +101,7 @@ for FILE in *; do
         sleep $(( 15 * (i + 1)))
 
         echo "RE-Uploading '${FILE}' at $( date "+%T" )"
-        gh release upload --repo "${ASSETS_REPOSITORY}" "${RELEASE_TAG}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
+        gh release upload --clobber --repo "${ASSETS_REPOSITORY}" "${RELEASE_TAG}" "${FILE}" "${FILE}.sha1" "${FILE}.sha256"
 
         EXIT_STATUS=$?
         echo "exit: ${EXIT_STATUS}"

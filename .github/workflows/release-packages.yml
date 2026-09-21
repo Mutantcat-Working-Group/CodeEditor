@@ -60,8 +60,19 @@ jobs:
             exit 1
           fi
 
+          # A release may be referred to as either `1.2.3` or `v1.2.3`; reuse
+          # whichever tag already exists so assets always land on one release.
+          RELEASE_TAG=""
+          for CANDIDATE in "${RAW_VERSION}" "v${VERSION}" "${VERSION}"; do
+            if git ls-remote --tags --exit-code origin "refs/tags/${CANDIDATE}" >/dev/null 2>&1; then
+              RELEASE_TAG="${CANDIDATE}"
+              break
+            fi
+          done
+          RELEASE_TAG="${RELEASE_TAG:-${RAW_VERSION}}"
+
           echo "release_version=${VERSION}" >> "${GITHUB_OUTPUT}"
-          echo "release_tag=${RAW_VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "release_tag=${RELEASE_TAG}" >> "${GITHUB_OUTPUT}"
           echo "ms_tag=$(jq -r '.tag' upstream/stable.json)" >> "${GITHUB_OUTPUT}"
           echo "ms_commit=$(jq -r '.commit' upstream/stable.json)" >> "${GITHUB_OUTPUT}"
 
