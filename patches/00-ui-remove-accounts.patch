@@ -15,7 +15,7 @@ index 3e20773..315443b 100644
  		actions.push(...this.getActivityBarContextMenuActions());
  	}
 diff --git a/src/vs/workbench/browser/parts/globalCompositeBar.ts b/src/vs/workbench/browser/parts/globalCompositeBar.ts
-index 6aec4cf..c832546 100644
+index 6aec4cf..d54558a 100644
 --- a/src/vs/workbench/browser/parts/globalCompositeBar.ts
 +++ b/src/vs/workbench/browser/parts/globalCompositeBar.ts
 @@ -11,8 +11,6 @@ import { IActivityService } from '../../services/activity/common/activity.js';
@@ -96,12 +96,10 @@ index 6aec4cf..c832546 100644
  	}
  
  	create(parent: HTMLElement): void {
-@@ -132,29 +95,6 @@ export class GlobalCompositeBar extends Disposable {
- 	focus(): void {
- 		this.globalActivityActionBar.focus(true);
+@@ -134,26 +97,7 @@ export class GlobalCompositeBar extends Disposable {
  	}
--
--	getContextMenuActions(): IAction[] {
+ 
+ 	getContextMenuActions(): IAction[] {
 -		return [toAction({ id: 'toggleAccountsVisibility', label: localize('accounts', "Accounts"), checked: this.accountsVisibilityPreference, run: () => this.accountsVisibilityPreference = !this.accountsVisibilityPreference })];
 -	}
 -
@@ -122,11 +120,11 @@ index 6aec4cf..c832546 100644
 -
 -	private set accountsVisibilityPreference(value: boolean) {
 -		setAccountsActionVisible(this.storageService, value);
--	}
++		return [];
+ 	}
  }
  
- abstract class AbstractGlobalActivityActionViewItem extends CompositeBarActionViewItem {
-@@ -772,7 +712,6 @@ export class SimpleAccountActivityActionViewItem extends AccountsActivityActionV
+@@ -772,7 +716,6 @@ export class SimpleAccountActivityActionViewItem extends AccountsActivityActionV
  		@IConfigurationService configurationService: IConfigurationService,
  		@IKeybindingService keybindingService: IKeybindingService,
  		@ISecretStorageService secretStorageService: ISecretStorageService,
@@ -134,7 +132,7 @@ index 6aec4cf..c832546 100644
  		@ILogService logService: ILogService,
  		@IActivityService activityService: IActivityService,
  		@IInstantiationService instantiationService: IInstantiationService,
-@@ -780,7 +719,7 @@ export class SimpleAccountActivityActionViewItem extends AccountsActivityActionV
+@@ -780,7 +723,7 @@ export class SimpleAccountActivityActionViewItem extends AccountsActivityActionV
  		@ICodexAccountService codexAccountService: ICodexAccountService,
  		@IDefaultAccountService defaultAccountService: IDefaultAccountService,
  	) {
@@ -143,7 +141,7 @@ index 6aec4cf..c832546 100644
  			{
  				...options,
  				colors: theme => ({
-@@ -809,9 +748,8 @@ export class SimpleGlobalActivityActionViewItem extends GlobalActivityActionView
+@@ -809,9 +752,8 @@ export class SimpleGlobalActivityActionViewItem extends GlobalActivityActionView
  		@IKeybindingService keybindingService: IKeybindingService,
  		@IInstantiationService instantiationService: IInstantiationService,
  		@IActivityService activityService: IActivityService,
@@ -154,7 +152,7 @@ index 6aec4cf..c832546 100644
  			{
  				...options,
  				colors: theme => ({
-@@ -824,25 +762,8 @@ export class SimpleGlobalActivityActionViewItem extends GlobalActivityActionView
+@@ -824,25 +766,8 @@ export class SimpleGlobalActivityActionViewItem extends GlobalActivityActionView
  	}
  }
  
@@ -182,7 +180,7 @@ index 6aec4cf..c832546 100644
 -	storageService.store(AccountsActivityActionViewItem.ACCOUNTS_VISIBILITY_PREFERENCE_KEY, visible, StorageScope.PROFILE, StorageTarget.USER);
 -}
 diff --git a/src/vs/workbench/browser/parts/titlebar/titlebarPart.ts b/src/vs/workbench/browser/parts/titlebar/titlebarPart.ts
-index 9d2e8a8..809f15d 100644
+index 9d2e8a8..620f621 100644
 --- a/src/vs/workbench/browser/parts/titlebar/titlebarPart.ts
 +++ b/src/vs/workbench/browser/parts/titlebar/titlebarPart.ts
 @@ -22,7 +22,7 @@ import { EventType, EventHelper, Dimension, append, $, addDisposableListener, pr
@@ -214,6 +212,15 @@ index 9d2e8a8..809f15d 100644
  import { IView } from '../../../../base/browser/ui/grid/grid.js';
  import { createInstantHoverDelegate } from '../../../../base/browser/ui/hover/hoverDelegateFactory.js';
  import { IBaseActionViewItemOptions } from '../../../../base/browser/ui/actionbar/actionViewItems.js';
+@@ -314,7 +314,7 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
+ 		@IBrowserWorkbenchEnvironmentService protected readonly environmentService: IBrowserWorkbenchEnvironmentService,
+ 		@IInstantiationService instantiationService: IInstantiationService,
+ 		@IThemeService themeService: IThemeService,
+-		@IStorageService private readonly storageService: IStorageService,
++		@IStorageService storageService: IStorageService,
+ 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
+ 		@IContextKeyService protected readonly contextKeyService: IContextKeyService,
+ 		@IHostService private readonly hostService: IHostService,
 @@ -660,9 +660,6 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
  			if (action.id === GLOBAL_ACTIVITY_ID) {
  				return this.instantiationService.createInstance(SimpleGlobalActivityActionViewItem, { position: () => HoverPosition.BELOW }, options);
@@ -244,11 +251,13 @@ index 9d2e8a8..809f15d 100644
  				actions.primary.push(GLOBAL_ACTIVITY_TITLE_ACTION);
  			}
  
-@@ -828,7 +821,6 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
+@@ -827,9 +820,6 @@ export class BrowserTitlebarPart extends Part implements ITitlebarPart {
+ 
  		if (update.activityActions) {
  			this.activityToolbarDisposables.clear();
- 			if (this.activityActionsEnabled) {
+-			if (this.activityActionsEnabled) {
 -				this.activityToolbarDisposables.add(this.storageService.onDidChangeValue(StorageScope.PROFILE, AccountsActivityActionViewItem.ACCOUNTS_VISIBILITY_PREFERENCE_KEY, this._store)(() => updateToolBarActions()));
- 			}
+-			}
  		}
  
+ 		updateToolBarActions();
