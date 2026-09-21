@@ -38,6 +38,21 @@ if [[ -z "${APP_EXE_NAME:-}" ]]; then
   exit 1
 fi
 
+APP_SRC_DIR="${APP_SRC_DIR:-../../../VSCode-win32-${APP_ARCH}}"
+
+# NSIS resolves a "File /r" argument by splitting it at the last platform path
+# separator. On Windows that separator is a backslash, so a trailing "/*" leaves
+# the wildcard glued to the directory name and the parent gets read instead of
+# the payload. Attach it with a backslash whenever makensis is the Windows build.
+case "$(uname -s)" in
+  MINGW* | MSYS* | CYGWIN*)
+    APP_SRC_PATTERN="${APP_SRC_DIR//\//\\}\\*"
+    ;;
+  *)
+    APP_SRC_PATTERN="${APP_SRC_DIR}/*"
+    ;;
+esac
+
 mkdir -p "${ROOT_DIR}/assets"
 
 # Git for Windows rewrites arguments that look like Unix paths, so a plain
@@ -57,6 +72,7 @@ run_makensis() {
     "${switch}DAPP_VERSION=${APP_VERSION}" \
     "${switch}DAPP_ARCH=${APP_ARCH}" \
     "${switch}DAPP_EXE_NAME=${APP_EXE_NAME}" \
+    "${switch}DAPP_SRC_PATTERN=${APP_SRC_PATTERN}" \
     codeeditor.nsi
 }
 
@@ -67,7 +83,7 @@ cd "${SCRIPT_DIR}"
 
 if ! run_makensis "/" && ! run_makensis "-"; then
   echo "makensis rejected both the /D and -D switch spellings" >&2
-  echo "tried: ${NSIS_BIN} /INPUTCHARSET ${SCRIPT_CHARSET} /DAPP_NAME=${APP_NAME} /DAPP_VERSION=${APP_VERSION} /DAPP_ARCH=${APP_ARCH} /DAPP_EXE_NAME=${APP_EXE_NAME} codeeditor.nsi" >&2
+  echo "tried: ${NSIS_BIN} /INPUTCHARSET ${SCRIPT_CHARSET} /DAPP_NAME=${APP_NAME} /DAPP_VERSION=${APP_VERSION} /DAPP_ARCH=${APP_ARCH} /DAPP_EXE_NAME=${APP_EXE_NAME} /DAPP_SRC_PATTERN=${APP_SRC_PATTERN} codeeditor.nsi" >&2
   exit 1
 fi
 

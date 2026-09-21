@@ -21,8 +21,12 @@ ManifestDPIAware true
 !define APP_EXE "${APP_EXE_NAME}"
 !define APP_INSTALL_DIR "$LOCALAPPDATA\Programs\${APP_NAME}"
 !define APP_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
-!ifndef APP_SRC_DIR
-  !define APP_SRC_DIR "..\..\..\VSCode-win32-${APP_ARCH}"
+; "File /r" is split at the last platform path separator, and that separator is
+; a backslash on Windows even when the rest of the path uses forward slashes, so
+; the wildcard has to hang off a backslash there. build.sh passes the pattern in;
+; this default assumes a native Windows makensis.
+!ifndef APP_SRC_PATTERN
+  !define APP_SRC_PATTERN "..\..\..\VSCode-win32-${APP_ARCH}\*"
 !endif
 !ifndef APP_OUT_FILE
   !define APP_OUT_FILE "..\..\..\assets\${APP_NAME}Setup-${APP_ARCH}-${APP_VERSION}.exe"
@@ -58,7 +62,7 @@ UninstPage instfiles
 
 Section "Install"
   SetOutPath "$INSTDIR"
-  File /r "${APP_SRC_DIR}/*"
+  File /r "${APP_SRC_PATTERN}"
 
   WriteUninstaller "$INSTDIR\uninstall.exe"
 

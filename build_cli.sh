@@ -41,7 +41,24 @@ if [[ "${OS_NAME}" == "osx" ]]; then
 
   cargo build --release --target "${VSCODE_CLI_TARGET}" --bin=code
 
-  cp "target/${VSCODE_CLI_TARGET}/release/code" "../../VSCode-darwin-${VSCODE_ARCH}/${NAME_SHORT}.app/Contents/Resources/app/bin/${TUNNEL_APPLICATION_NAME}"
+  # The bundle directory is named after product.nameLong, which carries the
+  # localized display name, so resolve it instead of assuming ${NAME_SHORT}.app.
+  APP_PARENT_DIR="../../VSCode-darwin-${VSCODE_ARCH}"
+  APP_DIR=""
+
+  for CANDIDATE in "${APP_PARENT_DIR}/${NAME_SHORT}.app" "${APP_PARENT_DIR}"/*.app; do
+    if [[ -d "${CANDIDATE}" ]]; then
+      APP_DIR="${CANDIDATE}"
+      break
+    fi
+  done
+
+  if [[ -z "${APP_DIR}" ]]; then
+    echo "No .app bundle found in ${APP_PARENT_DIR}" >&2
+    exit 1
+  fi
+
+  cp "target/${VSCODE_CLI_TARGET}/release/code" "${APP_DIR}/Contents/Resources/app/bin/${TUNNEL_APPLICATION_NAME}"
 elif [[ "${OS_NAME}" == "windows" ]]; then
   if [[ "${VSCODE_ARCH}" == "arm64" ]]; then
     VSCODE_CLI_TARGET="aarch64-pc-windows-msvc"
