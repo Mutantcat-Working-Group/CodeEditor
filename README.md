@@ -98,3 +98,9 @@ cd CodeEditor
 
 ### 九、许可证
 - 本项目构建脚本基于 [MIT](LICENSE) 许可发布，构建产物同样以 MIT 许可分发。
+
+---
+
+## 致谢
+
+本项目是 [VSCodium/vscodium](https://github.com/VSCodium/vscodium) 的 Fork，感谢原仓库及其作者的优秀开源工作，本仓库在其基础上继续维护与改进。
