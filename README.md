@@ -10,6 +10,7 @@
 - CodeEditor（中文名：蜥蜴编辑器）是一套构建脚本，它把 [Microsoft 的 vscode 仓库](https://github.com/microsoft/vscode) 打包成自由许可的二进制文件，并配好一套开箱可用的默认配置。
 - 本项目由 Mutantcat Working Group 维护，包名统一为 `org.mutantcat.*`，图标为 [`icon.png`](./icon.png)。
 - 当前版本 `1.0.20260922`，记录在 [`version.json`](version.json) 中，修改该文件即可升级版本号。
+- 版本号形如 `主版本.次版本.年月日`。CI 迭代时不会追加 `-1`、`-2` 这样的后缀：如果当天版本已被占用，就把日期往后推一天，例如 `1.0.20260922` 之后是 `1.0.20260923`。
 
 ### 二、功能特性
 - 默认关闭遥测与追踪，扩展市场指向 [open-vsx.org](https://open-vsx.org)

@@ -10,6 +10,7 @@
 - CodeEditor (蜥蜴编辑器) is a repository of build scripts that turns [Microsoft's vscode repository](https://github.com/microsoft/vscode) into freely licensed binaries with a community-driven default configuration.
 - It is maintained by the Mutantcat Working Group, uses `org.mutantcat.*` package identifiers, and ships with [`icon.png`](./icon.png).
 - The current version is `1.0.20260922` and lives in [`version.json`](version.json); edit that file to bump the version.
+- Versions look like `major.minor.YYYYMMDD`. Iterating in CI never appends a `-1` or `-2` suffix: when the day is already taken, the date simply moves on, so `1.0.20260922` is followed by `1.0.20260923`.
 
 ### 2. Features
 - Telemetry and tracking disabled by default, extensions served from [open-vsx.org](https://open-vsx.org)

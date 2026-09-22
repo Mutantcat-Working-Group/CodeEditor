@@ -11,9 +11,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Release version, for example 1.0.20260921"
+        description: "Release version, for example 1.0.20260922. Leave empty to use version.json."
         required: false
-        default: "1.0.20260921"
 
 env:
   APP_NAME: CodeEditor
@@ -47,29 +46,100 @@ jobs:
       - name: Resolve version
         id: resolve
         run: |
-          RAW_VERSION="${{ github.event.release.tag_name || github.event.inputs.version || github.ref_name }}"
+          EVENT_NAME="${{ github.event_name }}"
+
+          case "${EVENT_NAME}" in
+            release)
+              RAW_VERSION="${{ github.event.release.tag_name }}"
+              # The published tag owns this version, so a rerun of the same
+              # release has to keep targeting it instead of rolling on.
+              TRIGGER_VERSION="${RAW_VERSION}"
+              ;;
+            workflow_dispatch)
+              # Left blank on purpose, the value falls back to version.json.
+              RAW_VERSION="${{ github.event.inputs.version }}"
+              TRIGGER_VERSION=""
+              ;;
+            *)
+              RAW_VERSION="${{ github.ref_name }}"
+              TRIGGER_VERSION="${RAW_VERSION}"
+              ;;
+          esac
 
           if [[ -z "${RAW_VERSION}" || "${RAW_VERSION}" == "null" ]]; then
             RAW_VERSION="$(jq -r '.version // empty' version.json)"
           fi
 
-          VERSION="${RAW_VERSION#v}"
+          # A version is `major.minor.YYYYMMDD`. A tag may carry a `v` prefix
+          # and an old iteration may have left a `-1`/`-2` suffix behind; drop
+          # both so no release ever ships a suffixed version again.
+          normalize_version() {
+            local value="${1#v}"
+            echo "${value%%-*}"
+          }
+
+          VERSION="$(normalize_version "${RAW_VERSION}")"
+          TRIGGER_VERSION="$(normalize_version "${TRIGGER_VERSION}")"
 
           if [[ -z "${VERSION}" ]]; then
             echo "No release version provided" >&2
             exit 1
           fi
 
+          tag_exists() {
+            git ls-remote --tags --exit-code origin "refs/tags/${1}" >/dev/null 2>&1
+          }
+
+          next_day() {
+            # GNU date first, then the BSD variant used on macOS.
+            date -d "${1} +1 day" '+%Y%m%d' 2>/dev/null \
+              || date -j -v+1d -f '%Y%m%d' "${1}" '+%Y%m%d'
+          }
+
+          # Iterating twice in one day used to need `1.0.20260922-1`. Roll the
+          # date forward instead, so the same request yields `1.0.20260923`.
+          if [[ "${VERSION}" != "${TRIGGER_VERSION}" ]]; then
+            case "${VERSION}" in
+              *.*.*) ;;
+              *)
+                echo "Version '${VERSION}' is not major.minor.YYYYMMDD" >&2
+                exit 1
+                ;;
+            esac
+
+            MAJOR="${VERSION%%.*}"
+            REST="${VERSION#*.}"
+            MINOR="${REST%%.*}"
+            DAY="${REST#*.}"
+
+            ROLLED=0
+            while tag_exists "${VERSION}" || tag_exists "v${VERSION}"; do
+              ROLLED=$(( ROLLED + 1 ))
+
+              if (( ROLLED > 365 )); then
+                echo "Could not find a free version within a year of '${RAW_VERSION}'" >&2
+                exit 1
+              fi
+
+              DAY="$(next_day "${DAY}")"
+              VERSION="${MAJOR}.${MINOR}.${DAY}"
+            done
+
+            if (( ROLLED > 0 )); then
+              echo "Rolled version forward to '${VERSION}'"
+            fi
+          fi
+
           # A release may be referred to as either `1.2.3` or `v1.2.3`; reuse
           # whichever tag already exists so assets always land on one release.
           RELEASE_TAG=""
-          for CANDIDATE in "${RAW_VERSION}" "v${VERSION}" "${VERSION}"; do
-            if git ls-remote --tags --exit-code origin "refs/tags/${CANDIDATE}" >/dev/null 2>&1; then
+          for CANDIDATE in "v${VERSION}" "${VERSION}"; do
+            if tag_exists "${CANDIDATE}"; then
               RELEASE_TAG="${CANDIDATE}"
               break
             fi
           done
-          RELEASE_TAG="${RELEASE_TAG:-${RAW_VERSION}}"
+          RELEASE_TAG="${RELEASE_TAG:-${VERSION}}"
 
           echo "release_version=${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "release_tag=${RELEASE_TAG}" >> "${GITHUB_OUTPUT}"
