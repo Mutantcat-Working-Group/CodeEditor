@@ -14,9 +14,13 @@ sum_file() {
 
 cd assets
 
+rm -f checksums-md5.txt checksums-sha1.txt
+
 for FILE in *; do
   if [[ -f "${FILE}" ]]; then
     sum_file "${FILE}"
+    checksum -a md5 "${FILE}" >> checksums-md5.txt
+    checksum -a sha1 "${FILE}" >> checksums-sha1.txt
   fi
 done
 
