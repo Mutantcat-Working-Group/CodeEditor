@@ -37,4 +37,14 @@ languagepacks/
 
 ## 切换界面语言
 
-默认语言写死在 `patches/00-nls-default-chinese.patch` 的 `DEFAULT_LOCALE` 里。想临时换回英文，用 `--locale=en` 启动即可；这个参数和 argv.json 里的 `locale` 优先级都高于默认值。
+界面语言由设置项 `workbench.language` 控制，设置界面里搜"语言"即可找到。它有三个取值：
+
+- `auto`（默认）：跟随操作系统，中文系统进中文，其他系统进英文
+- `zh-cn`：简体中文
+- `en`：英文
+
+选择非 `auto` 的值时会弹出重启确认；确认后 `patches/00-ui-language-setting.patch` 把目标 locale 写进 argv.json 的 `locale` 键（`auto` 则删掉这个键）并重启编辑器。取消重启时设置值会被还原成当前实际生效的语言，下拉框里看到的永远是真实状态。argv.json 被手工改过或被还原时，启动阶段会以它为准反向校正设置项。
+
+`--locale` 命令行参数依然有效且优先级最高，但它不回写设置项，此时下拉框仍以 argv.json 的现状为准。
+
+新增字符串要汉化，就在 `zh-hans/translations/main.i18n.json` 的 `contents` 下找到对应模块 id（形如 `vs/workbench/contrib/localization/electron-browser/localization.contribution`），按 `localize(key, "...")` 里的 key 补一条中文即可；没补的 key 会退回英文原文。

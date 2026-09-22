@@ -1,26 +1,20 @@
 diff --git a/src/main.ts b/src/main.ts
-index 085290b..fc7900c 100644
+index 085290b..932a5ab 100644
 --- a/src/main.ts
 +++ b/src/main.ts
-@@ -115,6 +115,13 @@ protocol.registerSchemesAsPrivileged([
- // Global app listeners
- registerListeners();
- 
-+/**
-+ * CodeEditor starts up in Simplified Chinese. A locale given on the command
-+ * line or in argv.json still wins, and the language pack that ships with the
-+ * application is what turns this into a Chinese interface.
-+ */
-+const DEFAULT_LOCALE = 'zh-cn';
-+
- /**
-  * We can resolve the NLS configuration early if it is defined
-  * in argv.json before `app.ready` event. Otherwise we can only
-@@ -127,7 +134,7 @@ let nlsConfigurationPromise: Promise<INLSConfiguration> | undefined = undefined;
+@@ -127,7 +127,15 @@ let nlsConfigurationPromise: Promise<INLSConfiguration> | undefined = undefined;
  // the 'C' locale is the user's only configured locale.
  // No matter the OS, if the array is empty, default back to 'en'.
  const osLocale = processZhLocale((app.getPreferredSystemLanguages()?.[0] ?? 'en').toLowerCase());
 -const userLocale = getUserDefinedLocale(argvConfig);
++
++/**
++ * CodeEditor starts in Simplified Chinese whenever the operating system speaks
++ * Chinese. A locale passed on the command line or set in argv.json still wins,
++ * and the language pack that ships with the application is what turns this into
++ * a Chinese interface. Every other system language keeps the English default.
++ */
++const DEFAULT_LOCALE = osLocale.startsWith('zh') ? 'zh-cn' : undefined;
 +const userLocale = getUserDefinedLocale(argvConfig) ?? DEFAULT_LOCALE;
  if (userLocale) {
  	nlsConfigurationPromise = resolveNLSConfiguration({

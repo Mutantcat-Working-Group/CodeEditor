@@ -1,5 +1,5 @@
 diff --git a/src/vs/base/node/nls.ts b/src/vs/base/node/nls.ts
-index 0bb75a1..6d375e1 100644
+index 0bb75a1..4d53c46 100644
 --- a/src/vs/base/node/nls.ts
 +++ b/src/vs/base/node/nls.ts
 @@ -3,7 +3,7 @@
@@ -20,24 +20,52 @@ index 0bb75a1..6d375e1 100644
  		if (!languagePacks) {
  			return defaultNLSConfiguration(userLocale, osLocale, nlsMetadataPath);
  		}
-@@ -167,11 +167,36 @@ export async function resolveNLSConfiguration({ userLocale, osLocale, userDataPa
+@@ -167,13 +167,63 @@ export async function resolveNLSConfiguration({ userLocale, osLocale, userDataPa
   * translation files.
   *
   * The file is updated whenever a new language pack is installed or removed.
-+ * CodeEditor also ships a language pack of its own in `out/languagepacks`,
-+ * which is used whenever the user has not installed a language pack.
++ * It is also written when nothing is installed, so its presence alone says
++ * nothing about what the user has chosen.
++ *
++ * CodeEditor also ships a language pack in `out/languagepacks`. Those packs are
++ * merged in below so that a fresh install starts in Simplified Chinese instead
++ * of falling back to English.
   */
 -async function getLanguagePackConfigurations(userDataPath: string): Promise<ILanguagePacks | undefined> {
 +async function getLanguagePackConfigurations(userDataPath: string, nlsMetadataPath: string): Promise<ILanguagePacks | undefined> {
  	const configFile = join(userDataPath, 'languagepacks.json');
- 	try {
- 		return JSON.parse(await promises.readFile(configFile, 'utf-8'));
++	let userLanguagePacks: ILanguagePacks | undefined;
++	try {
++		userLanguagePacks = JSON.parse(await promises.readFile(configFile, 'utf-8'));
 +	} catch (err) {
 +		// Do nothing. If we can't read the file we have no language pack config.
 +	}
 +
++	const bundledLanguagePacks = await getBundledLanguagePackConfigurations(nlsMetadataPath);
++	if (!userLanguagePacks) {
++		return bundledLanguagePacks;
++	}
++
++	// Packs the user installed win; whatever is missing comes from the bundle.
++	if (bundledLanguagePacks) {
++		for (const [language, languagePack] of Object.entries(bundledLanguagePacks)) {
++			if (!userLanguagePacks[language]) {
++				userLanguagePacks[language] = languagePack;
++			}
++		}
++	}
++
++	return userLanguagePacks;
++}
++
++/**
++ * CodeEditor ships its own language pack next to `nls.messages.json`, so the
++ * relative paths in its `languagepacks.json` are resolved against that folder.
++ */
++async function getBundledLanguagePackConfigurations(nlsMetadataPath: string): Promise<ILanguagePacks | undefined> {
 +	const bundledRoot = join(nlsMetadataPath, 'languagepacks');
-+	try {
+ 	try {
+-		return JSON.parse(await promises.readFile(configFile, 'utf-8'));
 +		const bundled = JSON.parse(await promises.readFile(join(bundledRoot, 'languagepacks.json'), 'utf-8')) as ILanguagePacks;
 +		for (const languagePack of Object.values(bundled)) {
 +			const translations = languagePack?.translations;
@@ -45,8 +73,6 @@ index 0bb75a1..6d375e1 100644
 +				continue;
 +			}
 +
-+			// The bundled pack points at its message bundles relative to its
-+			// own folder. Turn those into absolute paths.
 +			for (const [id, path] of Object.entries(translations)) {
 +				if (typeof path === 'string' && !isAbsolute(path)) {
 +					translations[id] = join(bundledRoot, path);
@@ -56,5 +82,8 @@ index 0bb75a1..6d375e1 100644
 +
 +		return bundled;
  	} catch (err) {
- 		return undefined; // Do nothing. If we can't read the file we have no language pack config.
+-		return undefined; // Do nothing. If we can't read the file we have no language pack config.
++		return undefined; // Do nothing. If we can't read the bundled packs we have no language pack config.
  	}
+ }
+ 

@@ -1,0 +1,165 @@
+diff --git a/src/vs/workbench/contrib/localization/electron-browser/localization.contribution.ts b/src/vs/workbench/contrib/localization/electron-browser/localization.contribution.ts
+index 0455b75..a5b34cb 100644
+--- a/src/vs/workbench/contrib/localization/electron-browser/localization.contribution.ts
++++ b/src/vs/workbench/contrib/localization/electron-browser/localization.contribution.ts
+@@ -19,6 +19,59 @@ import { CancellationToken } from '../../../../base/common/cancellation.js';
+ import { ILocaleService } from '../../../services/localization/common/locale.js';
+ import { IProductService } from '../../../../platform/product/common/productService.js';
+ import { BaseLocalizationWorkbenchContribution } from '../common/localization.contribution.js';
++import { ConfigurationTarget, IConfigurationService } from '../../../../platform/configuration/common/configuration.js';
++import { ConfigurationScope, Extensions as ConfigurationExtensions, IConfigurationRegistry } from '../../../../platform/configuration/common/configurationRegistry.js';
++import { parse } from '../../../../base/common/jsonc.js';
++import { IJSONEditingService } from '../../../services/configuration/common/jsonEditing.js';
++import { IDialogService } from '../../../../platform/dialogs/common/dialogs.js';
++import { IEnvironmentService } from '../../../../platform/environment/common/environment.js';
++import { IFileService } from '../../../../platform/files/common/files.js';
++import { IHostService } from '../../../services/host/browser/host.js';
++
++const LANGUAGE_SETTING_ID = 'workbench.language';
++
++const LANGUAGE_AUTO = 'auto';
++const LANGUAGE_ZH_HANS = 'zh-cn';
++const LANGUAGE_EN = 'en';
++
++/**
++ * `auto` stands for whatever the bundled language pack picks for this machine,
++ * so every locale we cannot serve maps back to it.
++ */
++function toLanguageSettingValue(locale: string | undefined): string {
++	if (locale === LANGUAGE_ZH_HANS || locale === LANGUAGE_EN) {
++		return locale;
++	}
++
++	return LANGUAGE_AUTO;
++}
++
++const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
++configurationRegistry.registerConfiguration({
++	id: 'codeEditorLanguage',
++	title: localize('codeEditorLanguageConfigurationTitle', "Display Language"),
++	type: 'object',
++	properties: {
++		[LANGUAGE_SETTING_ID]: {
++			type: 'string',
++			default: LANGUAGE_AUTO,
++			enum: [LANGUAGE_AUTO, LANGUAGE_ZH_HANS, LANGUAGE_EN],
++			enumItemLabels: [
++				localize('codeEditorLanguageAutoLabel', "Follow the system"),
++				localize('codeEditorLanguageZhHansLabel', "中文(简体)"),
++				localize('codeEditorLanguageEnLabel', "English")
++			],
++			enumDescriptions: [
++				localize('codeEditorLanguageAutoDescription', "Use the language of the operating system, falling back to English."),
++				localize('codeEditorLanguageZhHansDescription', "Use Simplified Chinese."),
++				localize('codeEditorLanguageEnDescription', "Use English.")
++			],
++			description: localize('codeEditorLanguageDescription', "Sets the display language of the window. Changing it restarts the editor."),
++			scope: ConfigurationScope.APPLICATION,
++			tags: ['language']
++		}
++	}
++});
+ 
+ class NativeLocalizationWorkbenchContribution extends BaseLocalizationWorkbenchContribution {
+ 	private static LANGUAGEPACK_SUGGESTION_IGNORE_STORAGE_KEY = 'extensionsAssistant/languagePackSuggestionIgnore';
+@@ -32,12 +85,24 @@ class NativeLocalizationWorkbenchContribution extends BaseLocalizationWorkbenchC
+ 		@IExtensionGalleryService private readonly galleryService: IExtensionGalleryService,
+ 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
+ 		@ITelemetryService private readonly telemetryService: ITelemetryService,
++		@IConfigurationService private readonly configurationService: IConfigurationService,
++		@IJSONEditingService private readonly jsonEditingService: IJSONEditingService,
++		@IEnvironmentService private readonly environmentService: IEnvironmentService,
++		@IDialogService private readonly dialogService: IDialogService,
++		@IHostService private readonly hostService: IHostService,
++		@IFileService private readonly fileService: IFileService,
+ 	) {
+ 		super();
+ 
+ 		this.checkAndInstall();
+ 		this._register(this.extensionManagementService.onDidInstallExtensions(e => this.onDidInstallExtensions(e)));
+ 		this._register(this.extensionManagementService.onDidUninstallExtension(e => this.onDidUninstallExtension(e)));
++		this._register(this.configurationService.onDidChangeConfiguration(e => {
++			if (e.affectsConfiguration(LANGUAGE_SETTING_ID)) {
++				this.applyLanguageSetting();
++			}
++		}));
++		this.reconcileLanguageSetting();
+ 	}
+ 
+ 	private async onDidInstallExtensions(results: readonly InstallExtensionResult[]): Promise<void> {
+@@ -219,6 +284,59 @@ class NativeLocalizationWorkbenchContribution extends BaseLocalizationWorkbenchC
+ 		return installed.some(i => !!i.manifest.contributes?.localizations?.length
+ 			&& i.manifest.contributes.localizations.some(l => locale.startsWith(l.languageId.toLowerCase())));
+ 	}
++
++	/**
++	 * The setting only describes an intention until argv.json carries the same
++	 * locale, so the runtime settings decide what the dropdown shows whenever they
++	 * were edited by hand or restored from somewhere else.
++	 */
++	private async reconcileLanguageSetting(): Promise<void> {
++		const configured = this.configurationService.getValue<string | undefined>(LANGUAGE_SETTING_ID);
++		const effective = toLanguageSettingValue(await this.readLocalePreference());
++		if ((configured ?? LANGUAGE_AUTO) === effective) {
++			return;
++		}
++
++		await this.configurationService.updateValue(LANGUAGE_SETTING_ID, effective, ConfigurationTarget.USER);
++	}
++
++	private async applyLanguageSetting(): Promise<void> {
++		const requested = toLanguageSettingValue(this.configurationService.getValue<string | undefined>(LANGUAGE_SETTING_ID));
++		const active = toLanguageSettingValue(await this.readLocalePreference());
++		if (requested === active) {
++			return;
++		}
++
++		const { confirmed } = await this.dialogService.confirm({
++			message: localize('codeEditorLanguageRestartMessage', "The display language changes when the editor restarts."),
++			detail: localize('codeEditorLanguageRestartDetail', "{0} restarts to apply the display language. Unsaved editors are restored afterwards.", this.productService.nameLong),
++			primaryButton: localize('codeEditorLanguageRestart', "Restart Now")
++		});
++
++		if (!confirmed) {
++			// Point the setting back at the language that is still in effect.
++			await this.configurationService.updateValue(LANGUAGE_SETTING_ID, active, ConfigurationTarget.USER);
++			return;
++		}
++
++		try {
++			await this.jsonEditingService.write(this.environmentService.argvResource, [{ path: ['locale'], value: requested === LANGUAGE_AUTO ? undefined : requested }], true);
++			await this.hostService.restart();
++		} catch (err) {
++			this.notificationService.error(err);
++		}
++	}
++
++	private async readLocalePreference(): Promise<string | undefined> {
++		try {
++			const content = await this.fileService.readFile(this.environmentService.argvResource);
++			const parsed: unknown = parse(content.value.toString());
++			const locale = (parsed as { locale?: unknown })?.locale;
++			return typeof locale === 'string' && locale.length > 0 ? locale : undefined;
++		} catch (err) {
++			return undefined; // Missing or unreadable runtime settings mean no preferred locale.
++		}
++	}
+ }
+ 
+ const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
+diff --git a/src/vs/workbench/contrib/preferences/browser/settingsLayout.ts b/src/vs/workbench/contrib/preferences/browser/settingsLayout.ts
+index 2c363f1..bf5e1bd 100644
+--- a/src/vs/workbench/contrib/preferences/browser/settingsLayout.ts
++++ b/src/vs/workbench/contrib/preferences/browser/settingsLayout.ts
+@@ -133,6 +133,11 @@ export const tocData: ITOCEntry<string> = {
+ 					label: localize('appearance', "Appearance"),
+ 					settings: ['workbench.activityBar.*', 'workbench.*color*', 'workbench.fontAliasing', 'workbench.iconTheme', 'workbench.sidebar.location', 'workbench.*.visible', 'workbench.tips.enabled', 'workbench.tree.*', 'workbench.view.*']
+ 				},
++				{
++					id: 'workbench/language',
++					label: localize('language', "Language"),
++					settings: ['workbench.language']
++				},
+ 				{
+ 					id: 'workbench/breadcrumbs',
+ 					label: localize('breadcrumbs', "Breadcrumbs"),
