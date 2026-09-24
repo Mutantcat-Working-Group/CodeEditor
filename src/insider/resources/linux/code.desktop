@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=@@NAME_LONG@@
-Comment=Code Editing. Redefined.
+Comment=Code Editing. Redefined. 由异猫工作群（mutantcat.org）发行
 GenericName=Text Editor
 Exec=@@EXEC@@ %F
 Icon=@@ICON@@

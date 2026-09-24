@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1091,2154
+#
+# CodeEditor — 由异猫工作群（mutantcat.org）发行
+# GitHub: https://github.com/Mutantcat-Working-Group
 
 set -e
 
