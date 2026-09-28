@@ -421,6 +421,36 @@ jobs:
       - name: Install NSIS
         run: choco install nsis -y --no-progress
 
+      # Windows artifacts are self-signed with an ad-hoc grade certificate so the
+      # installer and the application binaries always carry a signature, even
+      # without an organization code-signing certificate in the secrets.
+      - name: Create self-signed code-signing certificate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $pfx = Join-Path $env:RUNNER_TEMP 'mutantcat-code-signing.pfx'
+          $password = 'mutantcat'
+          $cert = New-SelfSignedCertificate `
+            -Subject 'CN=Mutantcat Working Group, O=Mutantcat Working Group, C=CN' `
+            -CertStoreLocation 'Cert:\CurrentUser\My' `
+            -KeyUsage DigitalSignature `
+            -Type CodeSigningCert `
+            -KeyExportPolicy Exportable `
+            -KeyLength 2048 `
+            -HashAlgorithm SHA256 `
+            -NotAfter (Get-Date).AddYears(10)
+          Export-PfxCertificate -Cert $cert -FilePath $pfx -Password (ConvertTo-SecureString -String $password -Force -AsPlainText) | Out-Null
+          "PFX_PATH=$pfx" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "SIGN_PASSWORD=$password" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+          $signtool = $null
+          foreach ($kit in (Get-ChildItem -Path 'C:\Program Files (x86)\Windows Kits\10\bin' -Directory | Sort-Object Name -Descending)) {
+            $candidate = Join-Path $kit.FullName 'x64\signtool.exe'
+            if (Test-Path $candidate) { $signtool = $candidate; break }
+          }
+          if (-not $signtool) { throw 'signtool.exe not found in the Windows SDK' }
+          "SIGNTOOL_PATH=$signtool" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
       - name: Download vscode artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
@@ -433,8 +463,49 @@ jobs:
           npm_config_target_arch: ${{ matrix.vscode_arch }}
         run: ./build/windows/package.sh
 
+      # Sign the unpacked payload before it is packed into the installer so the
+      # installed binaries, not only the setup wrapper, carry the signature.
+      - name: Sign Windows application binaries
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not $env:PFX_PATH -or -not $env:SIGNTOOL_PATH) { throw 'code-signing setup did not run' }
+          $payload = "VSCode-win32-${{ matrix.vscode_arch }}"
+          if (-not (Test-Path $payload)) { throw "missing build output: $payload" }
+          $targets = @(Get-ChildItem -Path $payload -Include *.exe,*.dll,*.node -Recurse | ForEach-Object { $_.FullName })
+          if ($targets.Count -eq 0) { throw "$payload contains no executable to sign" }
+          foreach ($t in $targets) {
+            & $env:SIGNTOOL_PATH sign /fd SHA256 /f $env:PFX_PATH /p $env:SIGN_PASSWORD /d 'CodeEditor' "$t"
+            echo "signed $(Split-Path -Leaf $t)"
+          }
+
       - name: Build NSIS installer
         run: ./build/windows/nsis/build.sh
+
+      - name: Sign Windows installer
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not $env:PFX_PATH -or -not $env:SIGNTOOL_PATH) { throw 'code-signing setup did not run' }
+          $installers = @(Get-ChildItem -Path 'assets' -Filter '*Setup-*.exe' -File | ForEach-Object { $_.FullName })
+          if ($installers.Count -eq 0) { throw 'no NSIS installer found in assets/' }
+          foreach ($installer in $installers) {
+            & $env:SIGNTOOL_PATH sign /fd SHA256 /f $env:PFX_PATH /p $env:SIGN_PASSWORD /d 'CodeEditor Installer' "$installer"
+            echo "signed $installer"
+          }
+
+      - name: Verify Windows signatures
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $expected = 'CN=Mutantcat Working Group'
+          $installer = Get-ChildItem -Path 'assets' -Filter '*Setup-*.exe' -File | Select-Object -First 1
+          if (-not $installer) { throw 'no NSIS installer found in assets/' }
+          $signature = Get-AuthenticodeSignature $installer.FullName
+          if (-not $signature.SignerCertificate -or $signature.SignerCertificate.Subject -notlike "*$expected*") {
+            throw "invalid signer for $($installer.Name): $($signature.Status)"
+          }
+          Write-Host "verified $($installer.Name) is signed by $expected"
 
       - name: Prepare checksums
         run: ./prepare_checksums.sh
@@ -499,6 +570,25 @@ jobs:
           SHOULD_BUILD_CLI: no
           SHOULD_BUILD_ZIP: no
         run: ./prepare_assets.sh
+
+      # Guard the packaging contract: the DMG must carry the ad-hoc signature
+      # and expose the /Applications drop link.
+      - name: Verify DMG contents
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          images=(assets/*.dmg)
+          test "${#images[@]}" -eq 1
+          codesign --verify --strict --verbose=2 "${images[0]}"
+          hdiutil verify "${images[0]}"
+          mount="$(mktemp -d)"
+          hdiutil attach -nobrowse -readonly -mountpoint "${mount}" "${images[0]}" >/dev/null
+          test -L "${mount}/Applications"
+          app=("${mount}"/*.app)
+          test "${#app[@]}" -eq 1
+          codesign -dv "${app[0]}" 2>&1 | grep -q 'Signature=adhoc'
+          hdiutil detach "${mount}" >/dev/null
+          echo "mounted app is ad-hoc signed and offers /Applications"
 
       - name: Release
         env:

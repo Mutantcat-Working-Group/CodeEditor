@@ -176,6 +176,52 @@ jobs:
         run: ./prepare_assets.sh
         if: env.SHOULD_BUILD == 'yes'
 
+      # Without a SignPath token the installer would ship unsigned, so mint a
+      # self-signed certificate and sign the setup files with it. When SignPath
+      # is configured its signature replaces the self-signed one below.
+      - name: Create self-signed code-signing certificate
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $pfx = Join-Path $env:RUNNER_TEMP 'mutantcat-code-signing.pfx'
+          $password = 'mutantcat'
+          $cert = New-SelfSignedCertificate `
+            -Subject 'CN=Mutantcat Working Group, O=Mutantcat Working Group, C=CN' `
+            -CertStoreLocation 'Cert:\CurrentUser\My' `
+            -KeyUsage DigitalSignature `
+            -Type CodeSigningCert `
+            -KeyExportPolicy Exportable `
+            -KeyLength 2048 `
+            -HashAlgorithm SHA256 `
+            -NotAfter (Get-Date).AddYears(10)
+          Export-PfxCertificate -Cert $cert -FilePath $pfx -Password (ConvertTo-SecureString -String $password -Force -AsPlainText) | Out-Null
+          "PFX_PATH=$pfx" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "SIGN_PASSWORD=$password" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+          $signtool = $null
+          foreach ($kit in (Get-ChildItem -Path 'C:\Program Files (x86)\Windows Kits\10\bin' -Directory | Sort-Object Name -Descending)) {
+            $candidate = Join-Path $kit.FullName 'x64\signtool.exe'
+            if (Test-Path $candidate) { $signtool = $candidate; break }
+          }
+          if (-not $signtool) { throw 'signtool.exe not found in the Windows SDK' }
+          "SIGNTOOL_PATH=$signtool" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+        if: env.SHOULD_BUILD == 'yes'
+
+      - name: Self-sign Windows installers
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not $env:PFX_PATH -or -not $env:SIGNTOOL_PATH) { throw 'code-signing setup did not run' }
+          $targets = @(Get-ChildItem -Path 'assets' -File |
+            Where-Object { $_.Extension -eq '.exe' -or $_.Extension -eq '.msi' } |
+            ForEach-Object { $_.FullName })
+          if ($targets.Count -eq 0) { throw 'assets/ contains no .exe or .msi to sign' }
+          foreach ($t in $targets) {
+            & $env:SIGNTOOL_PATH sign /fd SHA256 /f $env:PFX_PATH /p $env:SIGN_PASSWORD /d 'CodeEditor Installer' "$t"
+            echo "signed $(Split-Path -Leaf $t)"
+          }
+        if: env.SHOULD_BUILD == 'yes' && secrets.SIGNPATH_API_TOKEN == ''
+
       - name: Upload unsigned artifacts
         id: upload-unsigned-artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -200,7 +246,7 @@ jobs:
           # 3h to manually approve the request
           wait-for-completion-timeout-in-seconds: 28800
           output-artifact-directory: assets/
-        if: env.SHOULD_BUILD == 'yes' && vars.DISABLE_INSIDER_WINDOWS_SIGNING != 'yes'
+        if: env.SHOULD_BUILD == 'yes' && vars.DISABLE_INSIDER_WINDOWS_SIGNING != 'yes' && secrets.SIGNPATH_API_TOKEN != ''
 
       - name: Prepare checksums
         run: ./prepare_checksums.sh
