@@ -176,6 +176,18 @@ jobs:
         run: ./prepare_assets.sh
         if: env.SHOULD_BUILD == 'yes'
 
+      # The secrets context cannot be read from a step-level if:, so resolve the
+      # SignPath token into the job environment here and gate on that flag below.
+      - name: Detect SignPath configuration
+        shell: pwsh
+        env:
+          SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+        run: |
+          $enabled = 'no'
+          if ($env:SIGNPATH_API_TOKEN) { $enabled = 'yes' }
+          "SIGNPATH_ENABLED=$enabled" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+        if: env.SHOULD_BUILD == 'yes'
+
       # Without a SignPath token the installer would ship unsigned, so mint a
       # self-signed certificate and sign the setup files with it. When SignPath
       # is configured its signature replaces the self-signed one below.
@@ -205,7 +217,7 @@ jobs:
           }
           if (-not $signtool) { throw 'signtool.exe not found in the Windows SDK' }
           "SIGNTOOL_PATH=$signtool" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-        if: env.SHOULD_BUILD == 'yes'
+        if: env.SHOULD_BUILD == 'yes' && env.SIGNPATH_ENABLED != 'yes'
 
       - name: Self-sign Windows installers
         shell: pwsh
@@ -220,7 +232,7 @@ jobs:
             & $env:SIGNTOOL_PATH sign /fd SHA256 /f $env:PFX_PATH /p $env:SIGN_PASSWORD /d 'CodeEditor Installer' "$t"
             echo "signed $(Split-Path -Leaf $t)"
           }
-        if: env.SHOULD_BUILD == 'yes' && secrets.SIGNPATH_API_TOKEN == ''
+        if: env.SHOULD_BUILD == 'yes' && env.SIGNPATH_ENABLED != 'yes'
 
       - name: Upload unsigned artifacts
         id: upload-unsigned-artifacts
@@ -246,7 +258,7 @@ jobs:
           # 8h to manually approve the request
           wait-for-completion-timeout-in-seconds: 28800
           output-artifact-directory: assets/
-        if: env.SHOULD_BUILD == 'yes' && secrets.SIGNPATH_API_TOKEN != ''
+        if: env.SHOULD_BUILD == 'yes' && env.SIGNPATH_ENABLED == 'yes'
 
       - name: Prepare checksums
         run: ./prepare_checksums.sh
