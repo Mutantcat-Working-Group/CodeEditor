@@ -393,7 +393,10 @@ jobs:
         include:
           - runner: windows-2022
             vscode_arch: x64
-          - runner: windows-11-arm
+          # arm64 is cross-built on the x64 runner. VS Code's build/preinstall
+          # probe cannot find the C++ toolchain on the windows-11-arm image,
+          # so a native arm64 runner cannot produce the installer at all.
+          - runner: windows-2022
             vscode_arch: arm64
     env:
       MS_COMMIT: ${{ needs.resolve.outputs.ms_commit }}

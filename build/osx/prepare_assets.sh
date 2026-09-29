@@ -72,14 +72,38 @@ fi
 if [[ "${SHOULD_BUILD_DMG}" != "no" ]]; then
   echo "Building and moving DMG"
   pushd "VSCode-darwin-${VSCODE_ARCH}"
-  if [[ -n "${CERTIFICATE_OSX_P12_DATA}" ]]; then
-    npx create-dmg ./*.app .
-  else
-    # create-dmg signs the DMG with whatever identity it can find and gives up
-    # when there is none, which is always the case without a paid certificate.
-    # Let it skip signing and apply an ad-hoc signature below instead.
-    npx create-dmg --no-code-sign ./*.app .
-  fi
+
+  build_dmg() {
+    if [[ -n "${CERTIFICATE_OSX_P12_DATA}" ]]; then
+      npx create-dmg ./*.app .
+    else
+      # create-dmg signs the DMG with whatever identity it can find and gives up
+      # when there is none, which is always the case without a paid certificate.
+      # Let it skip signing and apply an ad-hoc signature below instead.
+      npx create-dmg --no-code-sign ./*.app .
+    fi
+  }
+
+  # create-dmg drives hdiutil itself and now and then fails to detach its own
+  # scratch volume, which would otherwise kill the whole release.
+  attempt=1
+  while ! build_dmg; do
+    if (( attempt >= 3 )); then
+      echo "create-dmg failed after ${attempt} attempts" >&2
+      exit 1
+    fi
+
+    echo "create-dmg attempt ${attempt} failed, retrying"
+
+    # A failed run can leave the scratch volume mounted, which is exactly what
+    # makes the next attempt fail the same way.
+    hdiutil detach "/Volumes/${APP_NAME}" >/dev/null 2>&1 || true
+    rm -f ./*.dmg
+
+    attempt=$(( attempt + 1 ))
+    sleep $(( 15 * attempt ))
+  done
+
   mv ./*.dmg "../assets/${APP_NAME}.${VSCODE_ARCH}.${RELEASE_VERSION}.dmg"
   popd
 
