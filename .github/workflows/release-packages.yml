@@ -381,7 +381,7 @@ jobs:
     needs:
       - resolve
       - windows-compile
-    runs-on: windows-2022
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: write
     defaults:
@@ -390,9 +390,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        vscode_arch:
-          - x64
-          - arm64
+        include:
+          - runner: windows-2022
+            vscode_arch: x64
+          - runner: windows-11-arm
+            vscode_arch: arm64
     env:
       MS_COMMIT: ${{ needs.resolve.outputs.ms_commit }}
       MS_TAG: ${{ needs.resolve.outputs.ms_tag }}
