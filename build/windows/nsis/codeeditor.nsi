@@ -11,11 +11,6 @@ ManifestDPIAware true
 !ifndef APP_NAME
   !define APP_NAME "CodeEditor"
 !endif
-; User-facing name. APP_NAME above stays ASCII because it also builds install
-; paths, registry keys and the output file name; this one is only ever shown.
-!ifndef APP_DISPLAY_NAME
-  !define APP_DISPLAY_NAME "蜥蜴编辑器"
-!endif
 !ifndef APP_VERSION
   !define APP_VERSION "1.0.0"
 !endif
@@ -43,7 +38,7 @@ ManifestDPIAware true
   !define APP_ICON "..\..\..\src\stable\resources\win32\code.ico"
 !endif
 
-Name "${APP_DISPLAY_NAME} ${APP_VERSION} (${APP_ARCH})"
+Name "${APP_NAME} ${APP_VERSION} (${APP_ARCH})"
 OutFile "${APP_OUT_FILE}"
 InstallDir "${APP_INSTALL_DIR}"
 InstallDirRegKey HKLM "${APP_UNINST_KEY}" "InstallLocation"
@@ -60,16 +55,16 @@ Icon "${APP_ICON}"
 UninstallIcon "${APP_ICON}"
 
 VIProductVersion "${APP_VERSION}.0"
-VIAddVersionKey "ProductName" "${APP_DISPLAY_NAME}"
+VIAddVersionKey "ProductName" "${APP_NAME}"
 VIAddVersionKey "ProductVersion" "${APP_VERSION}"
 VIAddVersionKey "FileVersion" "${APP_VERSION}.0"
-VIAddVersionKey "FileDescription" "${APP_DISPLAY_NAME} Installer"
+VIAddVersionKey "FileDescription" "${APP_NAME} Installer"
 VIAddVersionKey "LegalCopyright" "CodeEditor Contributors - Mutantcat Working Group"
 VIAddVersionKey "OriginalFilename" "${APP_NAME}Setup-${APP_ARCH}-${APP_VERSION}.exe"
 
 ; Name the product in the footer where NSIS would otherwise show its own
 ; toolkit name and version.
-BrandingText "${APP_DISPLAY_NAME} ${APP_VERSION} (${APP_ARCH}) 安装程序 - 异猫工作群"
+BrandingText "${APP_NAME} ${APP_VERSION} (${APP_ARCH}) 安装程序 - 异猫工作群"
 
 !define MUI_ABORTWARNING
 !define MUI_ICON "${APP_ICON}"
@@ -93,20 +88,20 @@ BrandingText "${APP_DISPLAY_NAME} ${APP_VERSION} (${APP_ARCH}) 安装程序 - �
 
 ; The toolkit translates its own pages, but everything this script names itself
 ; has to carry both languages of its own.
-LangString FINISH_RUN_APP ${LANG_SIMPCHINESE} "运行 ${APP_DISPLAY_NAME}"
-LangString FINISH_RUN_APP ${LANG_ENGLISH} "Run ${APP_DISPLAY_NAME}"
-LangString SEC_APP ${LANG_SIMPCHINESE} "${APP_DISPLAY_NAME}（必需）"
-LangString SEC_APP ${LANG_ENGLISH} "${APP_DISPLAY_NAME} (required)"
+LangString FINISH_RUN_APP ${LANG_SIMPCHINESE} "运行 ${APP_NAME}"
+LangString FINISH_RUN_APP ${LANG_ENGLISH} "Run ${APP_NAME}"
+LangString SEC_APP ${LANG_SIMPCHINESE} "${APP_NAME}（必需）"
+LangString SEC_APP ${LANG_ENGLISH} "${APP_NAME} (required)"
 LangString SEC_DESKTOP ${LANG_SIMPCHINESE} "桌面快捷方式"
 LangString SEC_DESKTOP ${LANG_ENGLISH} "Desktop shortcut"
 LangString SEC_STARTMENU ${LANG_SIMPCHINESE} "开始菜单快捷方式"
 LangString SEC_STARTMENU ${LANG_ENGLISH} "Start menu shortcuts"
-LangString DESC_SEC_APP ${LANG_SIMPCHINESE} "安装 ${APP_DISPLAY_NAME} 应用程序。"
-LangString DESC_SEC_APP ${LANG_ENGLISH} "Installs the ${APP_DISPLAY_NAME} application."
-LangString DESC_SEC_DESKTOP ${LANG_SIMPCHINESE} "在桌面上添加 ${APP_DISPLAY_NAME} 快捷方式。"
-LangString DESC_SEC_DESKTOP ${LANG_ENGLISH} "Adds a ${APP_DISPLAY_NAME} shortcut to your desktop."
-LangString DESC_SEC_STARTMENU ${LANG_SIMPCHINESE} "在开始菜单中添加 ${APP_DISPLAY_NAME} 快捷方式。"
-LangString DESC_SEC_STARTMENU ${LANG_ENGLISH} "Adds ${APP_DISPLAY_NAME} shortcuts to the Start Menu."
+LangString DESC_SEC_APP ${LANG_SIMPCHINESE} "安装 ${APP_NAME} 应用程序。"
+LangString DESC_SEC_APP ${LANG_ENGLISH} "Installs the ${APP_NAME} application."
+LangString DESC_SEC_DESKTOP ${LANG_SIMPCHINESE} "在桌面上添加 ${APP_NAME} 快捷方式。"
+LangString DESC_SEC_DESKTOP ${LANG_ENGLISH} "Adds a ${APP_NAME} shortcut to your desktop."
+LangString DESC_SEC_STARTMENU ${LANG_SIMPCHINESE} "在开始菜单中添加 ${APP_NAME} 快捷方式。"
+LangString DESC_SEC_STARTMENU ${LANG_ENGLISH} "Adds ${APP_NAME} shortcuts to the Start Menu."
 
 Section "$(SEC_APP)" SEC_APP
   SectionIn RO
@@ -116,7 +111,7 @@ Section "$(SEC_APP)" SEC_APP
 
   WriteUninstaller "${APP_UNINST_EXE}"
 
-  WriteRegStr HKLM "${APP_UNINST_KEY}" "DisplayName" "${APP_DISPLAY_NAME}"
+  WriteRegStr HKLM "${APP_UNINST_KEY}" "DisplayName" "${APP_NAME}"
   WriteRegStr HKLM "${APP_UNINST_KEY}" "DisplayVersion" "${APP_VERSION}"
   WriteRegStr HKLM "${APP_UNINST_KEY}" "Publisher" "Mutantcat Working Group"
   WriteRegStr HKLM "${APP_UNINST_KEY}" "DisplayIcon" "$INSTDIR\${APP_EXE}"
@@ -129,14 +124,14 @@ SectionEnd
 
 Section "$(SEC_DESKTOP)" SEC_DESKTOP
   SetShellVarContext all
-  CreateShortcut "$DESKTOP\${APP_DISPLAY_NAME}.lnk" "$INSTDIR\${APP_EXE}"
+  CreateShortcut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}"
 SectionEnd
 
 Section "$(SEC_STARTMENU)" SEC_STARTMENU
   SetShellVarContext all
-  CreateDirectory "$SMPROGRAMS\${APP_DISPLAY_NAME}"
-  CreateShortcut "$SMPROGRAMS\${APP_DISPLAY_NAME}\${APP_DISPLAY_NAME}.lnk" "$INSTDIR\${APP_EXE}"
-  CreateShortcut "$SMPROGRAMS\${APP_DISPLAY_NAME}\卸载 ${APP_DISPLAY_NAME}.lnk" "${APP_UNINST_EXE}"
+  CreateDirectory "$SMPROGRAMS\${APP_NAME}"
+  CreateShortcut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}"
+  CreateShortcut "$SMPROGRAMS\${APP_NAME}\卸载 ${APP_NAME}.lnk" "${APP_UNINST_EXE}"
 SectionEnd
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -148,10 +143,10 @@ SectionEnd
 Section "Uninstall"
   SetShellVarContext all
 
-  Delete "$DESKTOP\${APP_DISPLAY_NAME}.lnk"
-  Delete "$SMPROGRAMS\${APP_DISPLAY_NAME}\${APP_DISPLAY_NAME}.lnk"
-  Delete "$SMPROGRAMS\${APP_DISPLAY_NAME}\卸载 ${APP_DISPLAY_NAME}.lnk"
-  RMDir "$SMPROGRAMS\${APP_DISPLAY_NAME}"
+  Delete "$DESKTOP\${APP_NAME}.lnk"
+  Delete "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk"
+  Delete "$SMPROGRAMS\${APP_NAME}\卸载 ${APP_NAME}.lnk"
+  RMDir "$SMPROGRAMS\${APP_NAME}"
 
   DeleteRegKey HKLM "${APP_UNINST_KEY}"
   RMDir /r "$INSTDIR"

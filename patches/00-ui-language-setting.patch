@@ -22,8 +22,8 @@ index 0455b75..a5b34cb 100644
 +const LANGUAGE_EN = 'en';
 +
 +/**
-+ * `auto` stands for whatever the bundled language pack picks for this machine,
-+ * so every locale we cannot serve maps back to it.
++ * `auto` is the built-in default, so every locale we do not ship maps back to
++ * it.
 + */
 +function toLanguageSettingValue(locale: string | undefined): string {
 +	if (locale === LANGUAGE_ZH_HANS || locale === LANGUAGE_EN) {
@@ -44,12 +44,12 @@ index 0455b75..a5b34cb 100644
 +			default: LANGUAGE_AUTO,
 +			enum: [LANGUAGE_AUTO, LANGUAGE_ZH_HANS, LANGUAGE_EN],
 +			enumItemLabels: [
-+				localize('codeEditorLanguageAutoLabel', "Follow the system"),
++				localize('codeEditorLanguageAutoLabel', "Built-in default"),
 +				localize('codeEditorLanguageZhHansLabel', "中文(简体)"),
 +				localize('codeEditorLanguageEnLabel', "English")
 +			],
 +			enumDescriptions: [
-+				localize('codeEditorLanguageAutoDescription', "Use the language of the operating system, falling back to English."),
++				localize('codeEditorLanguageAutoDescription', "Use the built-in default language, which is Simplified Chinese."),
 +				localize('codeEditorLanguageZhHansDescription', "Use Simplified Chinese."),
 +				localize('codeEditorLanguageEnDescription', "Use English.")
 +			],

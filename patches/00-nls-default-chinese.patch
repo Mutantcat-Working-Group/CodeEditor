@@ -19,3 +19,11 @@ index 085290b..932a5ab 100644
  if (userLocale) {
  	nlsConfigurationPromise = resolveNLSConfiguration({
  		userLocale,
+/**
+ * CodeEditor ships Simplified Chinese and starts in it on every system. A
+ * locale passed on the command line or set in argv.json still wins, and the
+ * language pack that ships with the application is what turns this into a
+ * Chinese interface.
+ */
+const DEFAULT_LOCALE = 'zh-cn';
+const userLocale = getUserDefinedLocale(argvConfig) ?? DEFAULT_LOCALE;

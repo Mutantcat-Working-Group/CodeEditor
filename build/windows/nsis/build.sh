@@ -5,8 +5,8 @@ APP_NAME="${APP_NAME:-CodeEditor}"
 APP_VERSION="${RELEASE_VERSION%-insider}"
 APP_ARCH="${VSCODE_ARCH:-x64}"
 NSIS_BIN="${NSIS_BIN:-makensis}"
-# The .nsi carries a UTF-8 display name, so tell makensis to read it as UTF-8
-# instead of the machine's ANSI code page.
+# Read the script as UTF-8 so anything non-ASCII in it is interpreted the same
+# way regardless of the machine's ANSI code page.
 SCRIPT_CHARSET="${SCRIPT_CHARSET:-UTF8}"
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

@@ -1,7 +1,7 @@
 <div align=center>
 <img src="./icon.png" style="width:100px;" width="100"/>
-<h2>蜥蜴编辑器</h2>
-<p>CodeEditor</p>
+<h2>CodeEditor</h2>
+<p>蜥蜴编辑器</p>
 </div>
 
 [English](README.en.md)
@@ -9,8 +9,8 @@
 ### 一、项目简介
 - CodeEditor（中文名：蜥蜴编辑器）是一款自由许可的代码编辑器发行版：内置简体中文界面，默认关闭遥测与追踪，扩展市场指向 [open-vsx.org](https://open-vsx.org)，三大平台全部主流架构下载后即可使用。
 - 包名统一为 `org.mutantcat.*`，图标为 [`icon.png`](./icon.png)。
-- 当前版本 `1.0.20260922`，记录在 [`version.json`](version.json) 中，修改该文件即可升级版本号。
-- 版本号形如 `主版本.次版本.年月日`。CI 迭代时不会追加 `-1`、`-2` 这样的后缀：如果当天版本已被占用，就把日期往后推一天，例如 `1.0.20260922` 之后是 `1.0.20260923`。
+- 当前版本 `1.0.20260929`，记录在 [`version.json`](version.json) 中，修改该文件即可升级版本号。
+- 版本号形如 `主版本.次版本.年月日`。CI 迭代时不会追加 `-1`、`-2` 这样的后缀：如果当天版本已被占用，就把日期往后推一天，例如 `1.0.20260929` 之后是 `1.0.20260930`。
 - **发行方** 由异猫工作群（mutantcat.org）发行，GitHub: https://github.com/Mutantcat-Working-Group
 
 ### 二、功能特性
@@ -23,14 +23,14 @@
 - 界面默认使用简体中文，语言包随安装包一起分发，不需要额外安装
 - 语言包位于安装目录的 `resources/app/out/languagepacks/`，源码仓库中对应 [`languagepacks/`](languagepacks/) 目录
 - 设置项 `workbench.language` 控制界面语言，在设置界面搜索“语言”即可找到，可选 `auto`、`zh-cn`、`en`
-- `auto` 跟随操作系统：中文系统进中文，其他系统进英文；改成其他取值会弹出重启确认，取消则回退到当前生效的语言
+- `auto` 是内置默认语言：无论系统语言是什么，安装后首次打开即为简体中文；改成其他取值会弹出重启确认，取消则回退到当前生效的语言
 - 想临时换一种语言，启动时加 `--locale=en`，参数优先级高于设置项
 - 命令面板（`Ctrl+Shift+P`）里也有「配置显示语言」
 
 ```
 CodeEditor.exe --locale=en                                     # Windows 临时切换
-open -a 蜥蜴编辑器 --args --locale=en                          # macOS 临时切换
-./CodeEditor-1.0.20260922-anylinux-x86_64.AppImage --locale=en # Linux 临时切换
+open -a CodeEditor --args --locale=en                          # macOS 临时切换
+./CodeEditor-1.0.20260929-anylinux-x86_64.AppImage --locale=en # Linux 临时切换
 ```
 
 ### 四、下载与安装
@@ -40,39 +40,39 @@ open -a 蜥蜴编辑器 --args --locale=en                          # macOS 临�
 
 ```
 Windows
-   下载 CodeEditorSetup-x64-1.0.20260922.exe 或 CodeEditorSetup-arm64-1.0.20260922.exe，双击运行。
+   下载 CodeEditorSetup-x64-1.0.20260929.exe 或 CodeEditorSetup-arm64-1.0.20260929.exe，双击运行。
    默认安装到 %LOCALAPPDATA%\Programs\CodeEditor，不需要管理员权限，可在系统设置中正常卸载。
 
 macOS
-   下载 CodeEditor.x64.1.0.20260922.dmg（Intel）或 CodeEditor.arm64.1.0.20260922.dmg（Apple Silicon）。
-   打开后把「蜥蜴编辑器」拖到 Applications，两个 DMG 都带有 ad-hoc 签名。
+   下载 CodeEditor.x64.1.0.20260929.dmg（Intel）或 CodeEditor.arm64.1.0.20260929.dmg（Apple Silicon）。
+   打开后把「CodeEditor」拖到 Applications，两个 DMG 都带有 ad-hoc 签名。
 
 Linux
-   下载 CodeEditor-1.0.20260922-anylinux-x86_64.AppImage 或 CodeEditor-1.0.20260922-anylinux-aarch64.AppImage。
-   chmod +x CodeEditor-1.0.20260922-anylinux-x86_64.AppImage
-   ./CodeEditor-1.0.20260922-anylinux-x86_64.AppImage
+   下载 CodeEditor-1.0.20260929-anylinux-x86_64.AppImage 或 CodeEditor-1.0.20260929-anylinux-aarch64.AppImage。
+   chmod +x CodeEditor-1.0.20260929-anylinux-x86_64.AppImage
+   ./CodeEditor-1.0.20260929-anylinux-x86_64.AppImage
 ```
 
 ### 五、安装包一览
 
 | 平台 | 架构 | 文件 | 格式 |
 | --- | --- | --- | --- |
-| Windows | x64 | `CodeEditorSetup-x64-1.0.20260922.exe` | NSIS 安装包 |
-| Windows | arm64 | `CodeEditorSetup-arm64-1.0.20260922.exe` | NSIS 安装包 |
-| macOS | x64（Intel） | `CodeEditor.x64.1.0.20260922.dmg` | ad-hoc 签名 DMG |
-| macOS | arm64（Apple Silicon） | `CodeEditor.arm64.1.0.20260922.dmg` | ad-hoc 签名 DMG |
-| Linux | x86_64 | `CodeEditor-1.0.20260922-anylinux-x86_64.AppImage` | AppImage |
-| Linux | aarch64 | `CodeEditor-1.0.20260922-anylinux-aarch64.AppImage` | AppImage |
+| Windows | x64 | `CodeEditorSetup-x64-1.0.20260929.exe` | NSIS 安装包 |
+| Windows | arm64 | `CodeEditorSetup-arm64-1.0.20260929.exe` | NSIS 安装包 |
+| macOS | x64（Intel） | `CodeEditor.x64.1.0.20260929.dmg` | ad-hoc 签名 DMG |
+| macOS | arm64（Apple Silicon） | `CodeEditor.arm64.1.0.20260929.dmg` | ad-hoc 签名 DMG |
+| Linux | x86_64 | `CodeEditor-1.0.20260929-anylinux-x86_64.AppImage` | AppImage |
+| Linux | aarch64 | `CodeEditor-1.0.20260929-anylinux-aarch64.AppImage` | AppImage |
 
 每个文件都会同时上传 `.sha1` 与 `.sha256` 校验和，可用于核对下载内容。
 
 ### 六、macOS 首次启动
 1. 由于 DMG 使用 ad-hoc 签名而非 Apple 开发者证书，首次打开时 Gatekeeper 可能提示无法验证开发者
-2. 右键点击「蜥蜴编辑器」选择“打开”即可
+2. 右键点击「CodeEditor」选择“打开”即可
 3. 也可以在终端执行下面这行命令移除隔离属性
 
 ```
-xattr -dr com.apple.quarantine "/Applications/蜥蜴编辑器.app"
+xattr -dr com.apple.quarantine "/Applications/CodeEditor.app"
 ```
 
 ### 七、从源码构建与发布

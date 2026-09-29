@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Release version, for example 1.0.20260922. Leave empty to use version.json."
+        description: "Release version, for example 1.0.20260929. Leave empty to use version.json."
         required: false
 
 env:

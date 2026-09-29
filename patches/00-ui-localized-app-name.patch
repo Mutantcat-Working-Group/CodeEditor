@@ -1,0 +1,82 @@
+diff --git a/src/vs/workbench/browser/parts/titlebar/windowTitle.ts b/src/vs/workbench/browser/parts/titlebar/windowTitle.ts
+index d2a6791..56d8876 100644
+--- a/src/vs/workbench/browser/parts/titlebar/windowTitle.ts
++++ b/src/vs/workbench/browser/parts/titlebar/windowTitle.ts
+@@ -21,7 +21,6 @@ import { template } from '../../../../base/common/labels.js';
+ import { ILabelService, Verbosity as LabelVerbosity } from '../../../../platform/label/common/label.js';
+ import { Emitter } from '../../../../base/common/event.js';
+ import { RunOnceScheduler } from '../../../../base/common/async.js';
+-import { IProductService } from '../../../../platform/product/common/productService.js';
+ import { Schemas } from '../../../../base/common/network.js';
+ import { getVirtualWorkspaceLocation } from '../../../../platform/workspace/common/virtualWorkspace.js';
+ import { IUserDataProfileService } from '../../../services/userDataProfile/common/userDataProfile.js';
+@@ -56,6 +55,7 @@ export class WindowTitle extends Disposable {
+ 
+ 	private static readonly NLS_USER_IS_ADMIN = isWindows ? localize('userIsAdmin', "[Administrator]") : localize('userIsSudo', "[Superuser]");
+ 	private static readonly NLS_EXTENSION_HOST = localize('devExtensionWindowTitlePrefix', "[Extension Development Host]");
++	private static readonly NLS_APP_NAME = localize('codeEditorAppName', "CodeEditor");
+ 	private static readonly TITLE_DIRTY = '\u25cf ';
+ 
+ 	private readonly properties: ITitleProperties = { isPure: true, isAdmin: false, prefix: undefined };
+@@ -95,7 +95,6 @@ export class WindowTitle extends Disposable {
+ 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
+ 		@ILabelService private readonly labelService: ILabelService,
+ 		@IUserDataProfileService private readonly userDataProfileService: IUserDataProfileService,
+-		@IProductService private readonly productService: IProductService,
+ 		@IViewsService private readonly viewsService: IViewsService,
+ 		@IDecorationsService private readonly decorationsService: IDecorationsService,
+ 		@IAccessibilityService private readonly accessibilityService: IAccessibilityService
+@@ -193,11 +192,11 @@ export class WindowTitle extends Disposable {
+ 			// Always set the native window title to identify us properly to the OS
+ 			let nativeTitle = title;
+ 			if (!trim(nativeTitle)) {
+-				nativeTitle = this.productService.nameLong;
++				nativeTitle = WindowTitle.NLS_APP_NAME;
+ 			}
+ 
+ 			const window = getWindowById(this.windowId, true).window;
+-			if (!window.document.title && isMacintosh && nativeTitle === this.productService.nameLong) {
++			if (!window.document.title && isMacintosh && nativeTitle === WindowTitle.NLS_APP_NAME) {
+ 				// TODO@electron macOS: if we set a window title for
+ 				// the first time and it matches the one we set in
+ 				// `windowImpl.ts` somehow the window does not appear
+@@ -205,7 +204,7 @@ export class WindowTitle extends Disposable {
+ 				// briefly to something different to ensure macOS
+ 				// recognizes we have a window.
+ 				// See: https://github.com/microsoft/vscode/issues/191288
+-				window.document.title = `${this.productService.nameLong} ${WindowTitle.TITLE_DIRTY}`;
++				window.document.title = `${WindowTitle.NLS_APP_NAME} ${WindowTitle.TITLE_DIRTY}`;
+ 			}
+ 
+ 			window.document.title = nativeTitle;
+@@ -218,7 +217,7 @@ export class WindowTitle extends Disposable {
+ 	private getFullWindowTitle(): string {
+ 		const { prefix, suffix } = this.getTitleDecorations();
+ 
+-		let title = this.getWindowTitle() || this.productService.nameLong;
++		let title = this.getWindowTitle() || WindowTitle.NLS_APP_NAME;
+ 		if (prefix) {
+ 			title = `${prefix} ${title}`;
+ 		}
+@@ -358,7 +357,7 @@ export class WindowTitle extends Disposable {
+ 		const folderName = folder ? folder.name : '';
+ 		const folderPath = folder ? this.labelService.getUriLabel(folder.uri) : '';
+ 		const dirty = editor?.isDirty() && !editor.isSaving() ? WindowTitle.TITLE_DIRTY : '';
+-		const appName = this.productService.nameLong;
++		const appName = WindowTitle.NLS_APP_NAME;
+ 		const profileName = this.userDataProfileService.currentProfile.isDefault ? '' : this.userDataProfileService.currentProfile.name;
+ 		const focusedView: string = this.viewsService.getFocusedViewName();
+ 		const activeEditorState = editorResource ? this.decorationsService.getDecoration(editorResource, false)?.tooltip : undefined;
+diff --git a/src/vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.ts b/src/vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.ts
+index cc6cb28..6ae17c1 100644
+--- a/src/vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.ts
++++ b/src/vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.ts
+@@ -930,7 +930,7 @@ export class GettingStartedPage extends EditorPane {
+ 		}));
+ 
+ 		const header = $('.header', {},
+-			$('h1.product-name.caption', {}, this.productService.nameLong),
++			$('h1.product-name.caption', {}, localize('codeEditorAppName', "CodeEditor")),
+ 			$('p.subtitle.description', {}, localize({ key: 'gettingStarted.editingEvolved', comment: ['Shown as subtitle on the Welcome page.'] }, "Editing evolved"))
+ 		);
+ 
