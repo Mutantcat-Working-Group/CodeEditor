@@ -14,7 +14,7 @@
 - **发行方** 由异猫工作群（mutantcat.org）发行，GitHub: https://github.com/Mutantcat-Working-Group
 
 ### 二、功能特性
-- Windows 提供 NSIS 安装包，每用户安装，不需要管理员权限
+- Windows 提供 NSIS 安装包，按系统安装，安装过程需要管理员权限
 - macOS 提供 ad-hoc 签名的 DMG，同时支持 Intel 与 Apple Silicon
 - Linux 提供 AppImage，无需安装即可运行
 - 发布 Release 或推送版本 tag 时，由 GitHub Actions 自动构建并上传安装包
@@ -41,7 +41,8 @@ open -a CodeEditor --args --locale=en                          # macOS 临时切
 ```
 Windows
    下载 CodeEditorSetup-x64-1.0.20260929.exe 或 CodeEditorSetup-arm64-1.0.20260929.exe，双击运行。
-   默认安装到 %LOCALAPPDATA%\Programs\CodeEditor，不需要管理员权限，可在系统设置中正常卸载。
+   安装器为简体中文与 English 双语界面，默认安装到 C:\Program Files\CodeEditor，面向本机所有用户，
+   安装过程需要管理员权限，可以在系统设置的应用列表里正常卸载。
 
 macOS
    下载 CodeEditor.x64.1.0.20260929.dmg（Intel）或 CodeEditor.arm64.1.0.20260929.dmg（Apple Silicon）。

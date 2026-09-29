@@ -13,7 +13,7 @@
 - **Publisher** Mutantcat Working Group (mutantcat.org) · GitHub: https://github.com/Mutantcat-Working-Group
 
 ### 2. Features
-- Windows installers built with NSIS, per-user install, no administrator rights required
+- Windows installers built with NSIS, per-machine install, administrator rights required
 - macOS DMGs with an ad-hoc code signature for both Intel and Apple Silicon
 - Linux AppImages that run without installation
 - GitHub Actions builds and uploads every package when a release is published or a version tag is pushed
@@ -40,8 +40,9 @@ open -a CodeEditor --args --locale=en                          # macOS, one-off 
 ```
 Windows
    Download CodeEditorSetup-x64-1.0.20260929.exe or CodeEditorSetup-arm64-1.0.20260929.exe and run it.
-   It installs into %LOCALAPPDATA%\Programs\CodeEditor without asking for administrator rights,
-   and can be removed from Windows Settings.
+   The installer shows Simplified Chinese and English, installs to C:\Program Files\CodeEditor for
+   every account on the machine, asks for administrator rights during setup, and can be removed
+   from the Windows Settings app list.
 
 macOS
    Download CodeEditor.x64.1.0.20260929.dmg (Intel) or CodeEditor.arm64.1.0.20260929.dmg (Apple Silicon).
