@@ -8,7 +8,7 @@
 ### 1. About
 - CodeEditor (蜥蜴编辑器) is a freely licensed editor distribution: a Simplified Chinese interface out of the box, telemetry and tracking off by default, extensions served from [open-vsx.org](https://open-vsx.org), and installers for every mainstream architecture on three platforms.
 - Package identifiers use `org.mutantcat.*`, and the app ships with [`icon.png`](./icon.png).
-- The current version is `1.0.20260929` and lives in [`version.json`](version.json); edit that file to bump the version.
+- The current version is `1.0.20260930` and lives in [`version.json`](version.json); edit that file to bump the version.
 - Versions look like `major.minor.YYYYMMDD`. Iterating in CI never appends a `-1` or `-2` suffix: when the day is already taken, the date simply moves on, so `1.0.20260929` is followed by `1.0.20260930`.
 - **Publisher** Mutantcat Working Group (mutantcat.org) · GitHub: https://github.com/Mutantcat-Working-Group
 
@@ -29,7 +29,7 @@
 ```
 CodeEditor.exe --locale=en                                     # Windows, one-off switch
 open -a CodeEditor --args --locale=en                          # macOS, one-off switch
-./CodeEditor-1.0.20260929-anylinux-x86_64.AppImage --locale=en # Linux, one-off switch
+./CodeEditor-1.0.20260930-anylinux-x86_64.AppImage --locale=en # Linux, one-off switch
 ```
 
 ### 4. Download and install
@@ -39,31 +39,31 @@ open -a CodeEditor --args --locale=en                          # macOS, one-off 
 
 ```
 Windows
-   Download CodeEditorSetup-x64-1.0.20260929.exe or CodeEditorSetup-arm64-1.0.20260929.exe and run it.
+   Download CodeEditorSetup-x64-1.0.20260930.exe or CodeEditorSetup-arm64-1.0.20260930.exe and run it.
    The installer shows Simplified Chinese and English, installs to C:\Program Files\CodeEditor for
    every account on the machine, asks for administrator rights during setup, and can be removed
    from the Windows Settings app list.
 
 macOS
-   Download CodeEditor.x64.1.0.20260929.dmg (Intel) or CodeEditor.arm64.1.0.20260929.dmg (Apple Silicon).
+   Download CodeEditor.x64.1.0.20260930.dmg (Intel) or CodeEditor.arm64.1.0.20260930.dmg (Apple Silicon).
    Drag CodeEditor into Applications. Both DMGs carry an ad-hoc signature.
 
 Linux
-   Download CodeEditor-1.0.20260929-anylinux-x86_64.AppImage or CodeEditor-1.0.20260929-anylinux-aarch64.AppImage.
-   chmod +x CodeEditor-1.0.20260929-anylinux-x86_64.AppImage
-   ./CodeEditor-1.0.20260929-anylinux-x86_64.AppImage
+   Download CodeEditor-1.0.20260930-anylinux-x86_64.AppImage or CodeEditor-1.0.20260930-anylinux-aarch64.AppImage.
+   chmod +x CodeEditor-1.0.20260930-anylinux-x86_64.AppImage
+   ./CodeEditor-1.0.20260930-anylinux-x86_64.AppImage
 ```
 
 ### 5. Packages
 
 | Platform | Architecture | File | Format |
 | --- | --- | --- | --- |
-| Windows | x64 | `CodeEditorSetup-x64-1.0.20260929.exe` | NSIS installer |
-| Windows | arm64 | `CodeEditorSetup-arm64-1.0.20260929.exe` | NSIS installer |
-| macOS | x64 (Intel) | `CodeEditor.x64.1.0.20260929.dmg` | ad-hoc signed DMG |
-| macOS | arm64 (Apple Silicon) | `CodeEditor.arm64.1.0.20260929.dmg` | ad-hoc signed DMG |
-| Linux | x86_64 | `CodeEditor-1.0.20260929-anylinux-x86_64.AppImage` | AppImage |
-| Linux | aarch64 | `CodeEditor-1.0.20260929-anylinux-aarch64.AppImage` | AppImage |
+| Windows | x64 | `CodeEditorSetup-x64-1.0.20260930.exe` | NSIS installer |
+| Windows | arm64 | `CodeEditorSetup-arm64-1.0.20260930.exe` | NSIS installer |
+| macOS | x64 (Intel) | `CodeEditor.x64.1.0.20260930.dmg` | ad-hoc signed DMG |
+| macOS | arm64 (Apple Silicon) | `CodeEditor.arm64.1.0.20260930.dmg` | ad-hoc signed DMG |
+| Linux | x86_64 | `CodeEditor-1.0.20260930-anylinux-x86_64.AppImage` | AppImage |
+| Linux | aarch64 | `CodeEditor-1.0.20260930-anylinux-aarch64.AppImage` | AppImage |
 
 Every file is published together with `.sha1` and `.sha256` checksums.
 

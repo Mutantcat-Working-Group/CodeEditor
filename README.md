@@ -9,7 +9,7 @@
 ### 一、项目简介
 - CodeEditor（中文名：蜥蜴编辑器）是一款自由许可的代码编辑器发行版：内置简体中文界面，默认关闭遥测与追踪，扩展市场指向 [open-vsx.org](https://open-vsx.org)，三大平台全部主流架构下载后即可使用。
 - 包名统一为 `org.mutantcat.*`，图标为 [`icon.png`](./icon.png)。
-- 当前版本 `1.0.20260929`，记录在 [`version.json`](version.json) 中，修改该文件即可升级版本号。
+- 当前版本 `1.0.20260930`，记录在 [`version.json`](version.json) 中，修改该文件即可升级版本号。
 - 版本号形如 `主版本.次版本.年月日`。CI 迭代时不会追加 `-1`、`-2` 这样的后缀：如果当天版本已被占用，就把日期往后推一天，例如 `1.0.20260929` 之后是 `1.0.20260930`。
 - **发行方** 由异猫工作群（mutantcat.org）发行，GitHub: https://github.com/Mutantcat-Working-Group
 
@@ -30,7 +30,7 @@
 ```
 CodeEditor.exe --locale=en                                     # Windows 临时切换
 open -a CodeEditor --args --locale=en                          # macOS 临时切换
-./CodeEditor-1.0.20260929-anylinux-x86_64.AppImage --locale=en # Linux 临时切换
+./CodeEditor-1.0.20260930-anylinux-x86_64.AppImage --locale=en # Linux 临时切换
 ```
 
 ### 四、下载与安装
@@ -40,30 +40,30 @@ open -a CodeEditor --args --locale=en                          # macOS 临时切
 
 ```
 Windows
-   下载 CodeEditorSetup-x64-1.0.20260929.exe 或 CodeEditorSetup-arm64-1.0.20260929.exe，双击运行。
+   下载 CodeEditorSetup-x64-1.0.20260930.exe 或 CodeEditorSetup-arm64-1.0.20260930.exe，双击运行。
    安装器为简体中文与 English 双语界面，默认安装到 C:\Program Files\CodeEditor，面向本机所有用户，
    安装过程需要管理员权限，可以在系统设置的应用列表里正常卸载。
 
 macOS
-   下载 CodeEditor.x64.1.0.20260929.dmg（Intel）或 CodeEditor.arm64.1.0.20260929.dmg（Apple Silicon）。
+   下载 CodeEditor.x64.1.0.20260930.dmg（Intel）或 CodeEditor.arm64.1.0.20260930.dmg（Apple Silicon）。
    打开后把「CodeEditor」拖到 Applications，两个 DMG 都带有 ad-hoc 签名。
 
 Linux
-   下载 CodeEditor-1.0.20260929-anylinux-x86_64.AppImage 或 CodeEditor-1.0.20260929-anylinux-aarch64.AppImage。
-   chmod +x CodeEditor-1.0.20260929-anylinux-x86_64.AppImage
-   ./CodeEditor-1.0.20260929-anylinux-x86_64.AppImage
+   下载 CodeEditor-1.0.20260930-anylinux-x86_64.AppImage 或 CodeEditor-1.0.20260930-anylinux-aarch64.AppImage。
+   chmod +x CodeEditor-1.0.20260930-anylinux-x86_64.AppImage
+   ./CodeEditor-1.0.20260930-anylinux-x86_64.AppImage
 ```
 
 ### 五、安装包一览
 
 | 平台 | 架构 | 文件 | 格式 |
 | --- | --- | --- | --- |
-| Windows | x64 | `CodeEditorSetup-x64-1.0.20260929.exe` | NSIS 安装包 |
-| Windows | arm64 | `CodeEditorSetup-arm64-1.0.20260929.exe` | NSIS 安装包 |
-| macOS | x64（Intel） | `CodeEditor.x64.1.0.20260929.dmg` | ad-hoc 签名 DMG |
-| macOS | arm64（Apple Silicon） | `CodeEditor.arm64.1.0.20260929.dmg` | ad-hoc 签名 DMG |
-| Linux | x86_64 | `CodeEditor-1.0.20260929-anylinux-x86_64.AppImage` | AppImage |
-| Linux | aarch64 | `CodeEditor-1.0.20260929-anylinux-aarch64.AppImage` | AppImage |
+| Windows | x64 | `CodeEditorSetup-x64-1.0.20260930.exe` | NSIS 安装包 |
+| Windows | arm64 | `CodeEditorSetup-arm64-1.0.20260930.exe` | NSIS 安装包 |
+| macOS | x64（Intel） | `CodeEditor.x64.1.0.20260930.dmg` | ad-hoc 签名 DMG |
+| macOS | arm64（Apple Silicon） | `CodeEditor.arm64.1.0.20260930.dmg` | ad-hoc 签名 DMG |
+| Linux | x86_64 | `CodeEditor-1.0.20260930-anylinux-x86_64.AppImage` | AppImage |
+| Linux | aarch64 | `CodeEditor-1.0.20260930-anylinux-aarch64.AppImage` | AppImage |
 
 每个文件都会同时上传 `.sha1` 与 `.sha256` 校验和，可用于核对下载内容。
 
